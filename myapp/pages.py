@@ -125,7 +125,10 @@ def index() -> rx.Component:
             # Hero section (full width)
             hero_section(
                 heading_1("Cheapest country for Creative Cloud All Apps — 2025"),
-                body_text_large("Save up to 80%", color=Colors.SUCCESS, font_weight=Typography.WEIGHT_SEMIBOLD),
+                body_text(
+                            "Did you know that the cost of Creative Cloud can vary significantly depending on where you buy it? In fact, the exact same subscription might be available in another country for only a fraction of what you're paying now. This guide will show you how global pricing works for Creative Cloud and how to take advantage of it. By using a reliable VPN (Virtual Private Network), you can unlock lower regional prices for Creative Cloud without compromising on access or quality. Read on to learn how to save money on Creative Cloud in 2025 while still enjoying all its benefits!",
+                            margin_bottom=Spacing.LG,
+                        ),
             ),
             
             # Main content
@@ -144,16 +147,7 @@ def index() -> rx.Component:
                         ),
                     ),
                     
-                    # Content sections
-                    section(
-                        heading_2("Creative Cloud All Apps Global Pricing Guide 2025 – How to Pay Less with a VPN"),
-                        
-                        body_text(
-                            "Did you know that the cost of Creative Cloud can vary significantly depending on where you buy it? In fact, the exact same subscription might be available in another country for only a fraction of what you're paying now. This guide will show you how global pricing works for Creative Cloud and how to take advantage of it. By using a reliable VPN (Virtual Private Network), you can unlock lower regional prices for Creative Cloud without compromising on access or quality. Read on to learn how to save money on Creative Cloud in 2025 while still enjoying all its benefits!",
-                            margin_bottom=Spacing.LG,
-                        ),
-                    ),
-                    
+                    # Content sections                
                     section(
                         heading_3("Creative Cloud Price Around the World"),
                         
