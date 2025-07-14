@@ -6,21 +6,61 @@ import os
 docs_url = "https://reflex.dev/docs/getting-started/introduction"
 filename = f"{config.app_name}/{config.app_name}.py"
 
-# Function to load pricing data from JSON
+# Function to load and process pricing data from JSON
 def load_pricing_data():
-    """Load pricing data from JSON file"""
+    """Load pricing data from JSON file and process it"""
     try:
         data_path = os.path.join(os.path.dirname(__file__), "data", "pricing.json")
         with open(data_path, "r") as f:
-            data = json.load(f)
-        return data
+            raw_data = json.load(f)
+        
+        # Process the data
+        processed_data = {}
+        
+        for item in raw_data:
+            region_name = item.get("region_name", "").strip()
+            amount = item.get("amount", 0)
+            timestamp = item.get("timestamp", "")
+            
+            # Skip if no region name or amount
+            if not region_name or not amount:
+                continue
+                
+            # Skip non-English characters (basic check for Arabic/other scripts)
+            if not all(ord(char) < 128 for char in region_name):
+                continue
+                
+            # Convert amount to float and format
+            try:
+                amount_float = float(amount)
+                if amount_float <= 0:
+                    continue
+            except (ValueError, TypeError):
+                continue
+            
+            # Keep only the most recent entry for each region
+            if region_name not in processed_data or timestamp > processed_data[region_name]["timestamp"]:
+                processed_data[region_name] = {
+                    "region_name": region_name,
+                    "amount": amount_float,
+                    "price_display": f"${amount_float:.2f}",
+                    "timestamp": timestamp
+                }
+        
+        # Convert to list and sort by price (cheapest first)
+        result = list(processed_data.values())
+        result.sort(key=lambda x: x["amount"])
+        
+        # Return only top 10
+        return result[:10]
+        
     except Exception as e:
         print(f"Error loading pricing data: {e}")
         # Fallback data if file doesn't exist
         return [
-            {"region_name": "Turkey", "amount": 12.99},
-            {"region_name": "India", "amount": 15.99},
-            {"region_name": "Brazil", "amount": 19.99},
+            {"region_name": "Turkey", "amount": 12.99, "price_display": "$12.99"},
+            {"region_name": "India", "amount": 15.99, "price_display": "$15.99"},
+            {"region_name": "Brazil", "amount": 19.99, "price_display": "$19.99"},
         ]
 
 class State(rx.State):
@@ -50,7 +90,7 @@ def index() -> rx.Component:
                                     color=rx.cond(index == 0, "green.500", "inherit")
                                 ),
                                 rx.td(
-                                    item["amount"],
+                                    item["price_display"],
                                     font_weight=rx.cond(index == 0, "bold", "normal"),
                                     color=rx.cond(index == 0, "green.500", "inherit")
                                 ),

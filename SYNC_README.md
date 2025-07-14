@@ -36,6 +36,9 @@ export GOOGLE_CREDENTIALS_PATH="/path/to/your/service_account.json"
 
 # Your spreadsheet ID
 export GOOGLE_SHEET_ID="your_spreadsheet_id_here"
+
+# Exchange rate API key (optional - for currency conversion)
+export EXCHANGE_API_KEY="your_exchange_rate_api_key"
 ```
 
 ### 4. Google Sheets Format
@@ -59,8 +62,20 @@ python sync_data.py
 
 This will:
 1. Try to connect to your Google Sheet
-2. If successful: Download data and save to `myapp/data/pricing.json`
-3. If failed: Create fallback data and show error message
+2. Fetch live currency exchange rates (if API key provided)
+3. Convert all prices to USD for consistent comparison
+4. If successful: Download data and save to `myapp/data/pricing.json`
+5. If failed: Create fallback data and show error message
+
+### Currency Conversion
+
+The script automatically converts all prices to USD using live exchange rates from [exchangerate-api.com](https://exchangerate-api.com/). 
+
+To enable currency conversion:
+1. Sign up for a free API key at exchangerate-api.com
+2. Set the environment variable: `export EXCHANGE_API_KEY="your_api_key"`
+
+Without the API key, only USD prices will be processed (others will be skipped).
 
 ### The app will automatically use the JSON data
 
