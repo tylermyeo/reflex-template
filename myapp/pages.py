@@ -89,31 +89,23 @@ def pricing_table() -> rx.Component:
             table_header(
                 table_header_cell("Country"),
                 table_header_cell("Monthly Price"),
-            ),
-            rx.tbody(
-                rx.foreach(
-                    State.pricing_data,
-                    lambda item, index: rx.tr(
+                    ),
+                    rx.tbody(
+                        rx.foreach(
+                            State.pricing_data,
+                            lambda item, index: rx.tr(
                         table_cell(
                             rx.cond(
                                 index == 0,
                                 success_text(item["region_name"], font_weight=Typography.WEIGHT_SEMIBOLD),
-                                rx.text(
-                                    item["region_name"],
-                                    font_family=Typography.FONT_FAMILY,
-                                    color=Colors.GRAY_700,
-                                )
+                                body_text(item["region_name"])
                             )
                         ),
                         table_cell(
                             rx.cond(
                                 index == 0,
                                 success_text(item["price_display"], font_weight=Typography.WEIGHT_SEMIBOLD),
-                                rx.text(
-                                    item["price_display"],
-                                    font_family=Typography.FONT_FAMILY,
-                                    color=Colors.GRAY_700,
-                                )
+                                body_text(item["price_display"])
                             )
                         ),
                     )

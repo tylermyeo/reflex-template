@@ -43,7 +43,7 @@ class Colors:
 # Typography
 class Typography:
     # Font families
-    FONT_FAMILY = "'Inter', -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif"
+    FONT_FAMILY = "'Bricolage Grotesque', -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif"
     FONT_MONO = "'JetBrains Mono', 'SF Mono', 'Consolas', monospace"
     
     # Font sizes (rem units for scalability)
@@ -58,11 +58,17 @@ class Typography:
     TEXT_5XL = "3rem"       # 48px
     
     # Font weights
+    WEIGHT_LIGHT = "200"
     WEIGHT_NORMAL = "400"
     WEIGHT_MEDIUM = "500" 
     WEIGHT_SEMIBOLD = "600"
     WEIGHT_BOLD = "700"
     WEIGHT_EXTRABOLD = "800"
+    
+    # Bricolage Grotesque specific properties
+    FONT_OPTICAL_SIZING = "auto"
+    FONT_VARIATION_SETTINGS = "'wdth' 100"
+    FONT_STYLE = "normal"
     
     # Line heights
     LEADING_TIGHT = "1.25"
