@@ -10,7 +10,8 @@ from .styles import (
     cta_button, card, container, section,
     styled_table, table_header, table_header_cell, table_cell,
     success_text, page_wrapper, content_section, hero_section,
-    main_layout, header, footer
+    main_layout, header, footer,
+    badge, BorderRadius
 )
 
 docs_url = "https://reflex.dev/docs/getting-started/introduction"
@@ -84,36 +85,61 @@ class State(rx.State):
         return str(datetime.datetime.now().year)
 
 def pricing_table() -> rx.Component:
-    """Styled pricing table component"""
-    return card(
+    """Clean pricing table without callout card"""
+    return rx.box(
         styled_table(
             table_header(
+                table_header_cell("Rank", text_align="center"),
                 table_header_cell("Country"),
-                table_header_cell("Monthly Price"),
-                    ),
-                    rx.tbody(
-                        rx.foreach(
-                            State.pricing_data,
-                            lambda item, index: rx.tr(
+                table_header_cell("Monthly Price", text_align="right"),
+            ),
+            rx.tbody(
+                rx.foreach(
+                    State.pricing_data,
+                    lambda item, index: rx.tr(
                         table_cell(
                             rx.cond(
                                 index == 0,
-                                success_text(item["region_name"], font_weight=Typography.WEIGHT_SEMIBOLD),
-                                body_text(item["region_name"])
-                            )
+                                badge("1", variant="success"),
+                                rx.text(index + 1, text_align="center", font_weight=Typography.WEIGHT_MEDIUM, color=Colors.GRAY_700)
+                            ),
+                            text_align="center",
                         ),
                         table_cell(
                             rx.cond(
                                 index == 0,
-                                success_text(item["price_display"], font_weight=Typography.WEIGHT_SEMIBOLD),
-                                body_text(item["price_display"])
-                            )
+                                rx.hstack(
+                                    body_text(item["region_name"], 
+                                             font_weight=Typography.WEIGHT_BOLD,
+                                             color=Colors.SUCCESS),
+                                    rx.text("🏆", font_size="16px"),
+                                    spacing=Spacing.SM,
+                                    align="center",
+                                ),
+                                body_text(item["region_name"], font_weight=Typography.WEIGHT_MEDIUM)
+                            ),
+                        ),
+                        table_cell(
+                            rx.cond(
+                                index == 0,
+                                body_text(item["price_display"], 
+                                         font_weight=Typography.WEIGHT_BOLD,
+                                         color=Colors.SUCCESS,
+                                         text_align="right"),
+                                body_text(item["price_display"], 
+                                         font_weight=Typography.WEIGHT_MEDIUM,
+                                         color=Colors.GRAY_700,
+                                         text_align="right")
+                            ),
+                            text_align="right",
                         ),
                     )
                 )
             ),
         ),
-        margin_bottom=Spacing.XXL,
+        border_radius=BorderRadius.LG,
+        overflow="hidden",
+        width="100%",
     )
 
 def index() -> rx.Component:
@@ -129,6 +155,55 @@ def index() -> rx.Component:
                             "Did you know that the cost of Creative Cloud can vary significantly depending on where you buy it? In fact, the exact same subscription might be available in another country for only a fraction of what you're paying now. This guide will show you how global pricing works for Creative Cloud and how to take advantage of it. By using a reliable VPN (Virtual Private Network), you can unlock lower regional prices for Creative Cloud without compromising on access or quality. Read on to learn how to save money on Creative Cloud in 2025 while still enjoying all its benefits!",
                             margin_bottom=Spacing.LG,
                         ),
+                
+                # Cheapest price callout card
+                rx.box(
+                    rx.hstack(
+                        rx.vstack(
+                            rx.cond(
+                                State.pricing_data,
+                                rx.vstack(
+                                    body_text_small("🏆 CHEAPEST OPTION", 
+                                                   color=Colors.SUCCESS, 
+                                                   font_weight=Typography.WEIGHT_BOLD,
+                                                   text_transform="uppercase",
+                                                   letter_spacing="0.1em"),
+                                    rx.hstack(
+                                        heading_1(State.pricing_data[0]["region_name"], 
+                                                 color=Colors.GRAY_900,
+                                                 margin_bottom="0",
+                                                 font_size=Typography.TEXT_3XL),
+                                        heading_1(State.pricing_data[0]["price_display"], 
+                                                 color=Colors.SUCCESS,
+                                                 margin_bottom="0",
+                                                 font_size=Typography.TEXT_3XL),
+                                        spacing=Spacing.MD,
+                                        align="center",
+                                    ),
+                                    body_text("per month", color=Colors.GRAY_500, font_size=Typography.TEXT_SM),
+                                    spacing=Spacing.XS,
+                                    align="center",
+                                ),
+                                rx.text("Loading..."),
+                            ),
+                            spacing=Spacing.SM,
+                            align="center",
+                        ),
+                        rx.spacer(),
+                        cta_button(
+                            "Unlock This Price with NordVPN",
+                            size="lg",
+                        ),
+                        align="center",
+                        spacing=Spacing.XL,
+                        width="100%",
+                    ),
+                    background_color=Colors.SUCCESS + "10",  # Light success background
+                    border=f"2px solid {Colors.SUCCESS}",
+                    border_radius=BorderRadius.LG,
+                    padding=Spacing.XL,
+                    max_width="800px",
+                ),
             ),
             
             # Main content
@@ -136,20 +211,13 @@ def index() -> rx.Component:
                 content_section(
                     # Pricing table section
                     section(
+                        heading_2("Top 10 cheapest countries for Creative Cloud All Apps"),
                         pricing_table(),
-                    ),
-                    
-                    # CTA section
-                    section(
-                        cta_button(
-                            "Unlock cheapest price with NordVPN",
-                            size="lg",
-                        ),
                     ),
                     
                     # Content sections                
                     section(
-                        heading_3("Creative Cloud Price Around the World"),
+                        heading_2("Creative Cloud Price Around the World"),
                         
                         body_text(
                             "Pricing for Creative Cloud isn't the same everywhere – it's a classic case of regional pricing (also known as price discrimination). Companies often charge different prices in different countries based on factors like local income levels, competition, or market strategy. This means users in lower-income regions often pay much less for the same service than those in wealthier regions.",
@@ -172,7 +240,7 @@ def index() -> rx.Component:
                     ),
                     
                     section(
-                        heading_3("Why Does Creative Cloud Cost More or Less Depending on Country?"),
+                        heading_2("Why Does Creative Cloud Cost More or Less Depending on Country?"),
                         
                         body_text(
                             "You might wonder why such price differences exist. The answer lies in companies' pricing strategies. Many services use regional pricing to make their products affordable in markets with lower incomes. This is a form of price discrimination: for instance, a streaming plan might be set at just a couple of dollars in India (to match local purchasing power) but is over $10 in the US, where consumers are used to higher prices.",

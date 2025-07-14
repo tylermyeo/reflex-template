@@ -211,7 +211,7 @@ def styled_table(*children, **props) -> rx.Component:
     return rx.table_container(
         rx.table(
             *children,
-            variant="striped",
+            variant="simple",  # Changed from "striped" to "simple" for flat design
             size="lg",
             font_family=Typography.FONT_FAMILY,
         ),
@@ -219,6 +219,7 @@ def styled_table(*children, **props) -> rx.Component:
         overflow_x="auto",
         border_radius=BorderRadius.LG,
         border=f"1px solid {Colors.GRAY_200}",
+        background_color=Colors.WHITE,
         **props
     )
 
@@ -234,23 +235,25 @@ def table_header(*children, **props) -> rx.Component:
 
 def table_header_cell(text: str, **props) -> rx.Component:
     """Styled table header cell"""
-    return rx.th(
-        text,
-        font_weight=Typography.WEIGHT_SEMIBOLD,
-        color=Colors.GRAY_700,
-        padding=Spacing.MD,
-        text_align="left",
-        **props
-    )
+    default_props = {
+        "font_weight": Typography.WEIGHT_SEMIBOLD,
+        "color": Colors.GRAY_700,
+        "padding": Spacing.MD,
+        "text_align": "left",
+    }
+    # Allow props to override defaults
+    default_props.update(props)
+    return rx.th(text, **default_props)
 
 def table_cell(content, **props) -> rx.Component:
     """Styled table cell"""
-    return rx.td(
-        content,
-        padding=Spacing.MD,
-        color=Colors.GRAY_700,
-        **props
-    )
+    default_props = {
+        "padding": Spacing.MD,
+        "color": Colors.GRAY_700,
+    }
+    # Allow props to override defaults
+    default_props.update(props)
+    return rx.td(content, **default_props)
 
 # Status and feedback components
 def success_text(text: str, **props) -> rx.Component:
