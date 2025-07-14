@@ -23,6 +23,21 @@ custom_style = {
     },
 }
 
+# Google Analytics configuration
+def google_analytics():
+    """Create Google Analytics tracking components"""
+    return [
+        # Google Analytics script
+        rx.script(src="https://www.googletagmanager.com/gtag/js?id=G-QK7PNNWCBW", async_=True),
+        # Google Analytics initialization
+        rx.script("""
+            window.dataLayer = window.dataLayer || [];
+            function gtag(){dataLayer.push(arguments);}
+            gtag('js', new Date());
+            gtag('config', 'G-QK7PNNWCBW');
+        """),
+    ]
+
 app = rx.App(
     style={
         "font_family": "'Bricolage Grotesque', sans-serif",
@@ -33,6 +48,8 @@ app = rx.App(
     stylesheets=[
         "https://fonts.googleapis.com/css2?family=Bricolage+Grotesque:opsz,wdth,wght@12..96,75..100,200..800&display=swap",
     ],
+    # Add Google Analytics to the head of every page
+    head_components=google_analytics(),
 )
 
 app.add_page(index)
