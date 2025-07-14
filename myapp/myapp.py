@@ -52,8 +52,48 @@ app = rx.App(
     head_components=google_analytics(),
 )
 
-app.add_page(index)
-app.add_page(health)
+# Homepage with SEO optimization
+app.add_page(
+    index,
+    route="/",
+    title="Cheapest Country for Creative Cloud All Apps — 2025 | PriceDuck",
+    description="Discover the cheapest countries to buy Creative Cloud All Apps in 2025. Save up to 80% on your Adobe subscription with our comprehensive pricing guide and VPN setup tutorial.",
+    meta=[
+        # Basic SEO
+        {"name": "keywords", "content": "creative cloud pricing, adobe subscription discount, cheapest creative cloud, creative cloud vpn, global pricing creative cloud, save money adobe"},
+        {"name": "author", "content": "PriceDuck"},
+        {"name": "robots", "content": "index, follow"},
+        {"name": "viewport", "content": "width=device-width, initial-scale=1.0"},
+        
+        # Open Graph (Social Sharing)
+        {"property": "og:title", "content": "Cheapest Country for Creative Cloud All Apps — 2025 | PriceDuck"},
+        {"property": "og:description", "content": "Save up to 80% on Creative Cloud by choosing the right country. Complete pricing guide and VPN setup tutorial included."},
+        {"property": "og:type", "content": "website"},
+        {"property": "og:url", "content": "https://www.priceduck.co.za"},
+        {"property": "og:image", "content": "https://www.priceduck.co.za/og-image.jpg"},
+        {"property": "og:site_name", "content": "PriceDuck"},
+        
+        # Twitter Card
+        {"name": "twitter:card", "content": "summary_large_image"},
+        {"name": "twitter:title", "content": "Cheapest Country for Creative Cloud All Apps — 2025"},
+        {"name": "twitter:description", "content": "Save up to 80% on Creative Cloud by choosing the right country. Complete pricing guide included."},
+        {"name": "twitter:image", "content": "https://www.priceduck.co.za/og-image.jpg"},
+        
+        # Additional SEO
+        {"name": "theme-color", "content": "#8B5CF6"},
+        {"name": "language", "content": "English"},
+        {"name": "revisit-after", "content": "7 days"},
+    ]
+)
+
+# Health page (hidden from search engines)
+app.add_page(
+    health,
+    route="/health", 
+    title="Health Check | PriceDuck",
+    description="System health status",
+    meta=[{"name": "robots", "content": "noindex, nofollow"}]
+)
 
 app.api.add_api_route(
     path="/",

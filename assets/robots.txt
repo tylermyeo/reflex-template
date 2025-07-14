@@ -1,0 +1,13 @@
+User-agent: *
+Allow: /
+
+# Block admin/technical pages from search engines
+Disallow: /health
+Disallow: /api
+Disallow: /backend
+
+# Sitemap location
+Sitemap: https://www.priceduck.co.za/sitemap.xml
+
+# Be respectful to crawlers
+Crawl-delay: 1 
