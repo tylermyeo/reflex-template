@@ -40,15 +40,14 @@ def footer():
         ),
         padding_y="2em",
         padding_x="10%",
-        background_color=rx.color_mode_cond(light="gray.100", dark="#1A202C"),
-        border_top=rx.color_mode_cond(light="1px solid #E2E8F0", dark="1px solid #2D3748"),
+        background_color="gray.100",
+        border_top="1px solid #E2E8F0",
         width="100%",
     )
 
 
 def index() -> rx.Component:
     return rx.fragment(
-        rx.color_mode_button(rx.color_mode_icon(), float="right"),
         rx.vstack(
             rx.heading(f"Cheapest country for {State.selected_product} — {datetime.date.today().year}", font_size="2em"),
             rx.text("Save up to 80%", font_size="1.2em"),
@@ -209,7 +208,6 @@ def health() -> rx.Component:
 
 def not_found(page_text) -> rx.Component:
     return rx.fragment(
-        rx.color_mode_button(rx.color_mode_icon(), float="right"),
         rx.vstack(
             rx.heading(page_text, font_size="2em"),
             spacing="1.5em",

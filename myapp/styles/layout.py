@@ -31,14 +31,6 @@ def header(**props) -> rx.Component:
                 # Spacer
                 rx.spacer(),
                 
-                # Color mode toggle
-                rx.color_mode_button(
-                    rx.color_mode_icon(),
-                    background_color="transparent",
-                    border="none",
-                    cursor="pointer",
-                ),
-                
                 align="center",
                 width="100%",
                 padding_y=Spacing.MD,
