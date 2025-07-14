@@ -9,7 +9,8 @@ from .styles import (
     heading_1, heading_2, heading_3, body_text, body_text_large, body_text_small,
     cta_button, card, container, section,
     styled_table, table_header, table_header_cell, table_cell,
-    success_text, page_wrapper, content_section, hero_section
+    success_text, page_wrapper, content_section, hero_section,
+    main_layout, header, footer
 )
 
 docs_url = "https://reflex.dev/docs/getting-started/introduction"
@@ -116,79 +117,94 @@ def pricing_table() -> rx.Component:
     )
 
 def index() -> rx.Component:
-    return page_wrapper(
-        # Hero section
-        hero_section(
-            heading_1("Cheapest country for Creative Cloud All Apps — 2025"),
-            body_text_large("Save up to 80%", color=Colors.SUCCESS, font_weight=Typography.WEIGHT_SEMIBOLD),
-        ),
-        
-        # Main content
-        content_section(
-            # Pricing table section
-            section(
-                pricing_table(),
+    return main_layout(
+        rx.vstack(
+            # Header
+            header(),
+            
+            # Hero section (full width)
+            hero_section(
+                heading_1("Cheapest country for Creative Cloud All Apps — 2025"),
+                body_text_large("Save up to 80%", color=Colors.SUCCESS, font_weight=Typography.WEIGHT_SEMIBOLD),
             ),
             
-            # CTA section
-            section(
-                cta_button(
-                    "Unlock cheapest price with NordVPN",
-                    size="lg",
+            # Main content
+            rx.box(
+                content_section(
+                    # Pricing table section
+                    section(
+                        pricing_table(),
+                    ),
+                    
+                    # CTA section
+                    section(
+                        cta_button(
+                            "Unlock cheapest price with NordVPN",
+                            size="lg",
+                        ),
+                    ),
+                    
+                    # Content sections
+                    section(
+                        heading_2("Creative Cloud All Apps Global Pricing Guide 2025 – How to Pay Less with a VPN"),
+                        
+                        body_text(
+                            "Did you know that the cost of Creative Cloud can vary significantly depending on where you buy it? In fact, the exact same subscription might be available in another country for only a fraction of what you're paying now. This guide will show you how global pricing works for Creative Cloud and how to take advantage of it. By using a reliable VPN (Virtual Private Network), you can unlock lower regional prices for Creative Cloud without compromising on access or quality. Read on to learn how to save money on Creative Cloud in 2025 while still enjoying all its benefits!",
+                            margin_bottom=Spacing.LG,
+                        ),
+                    ),
+                    
+                    section(
+                        heading_3("Creative Cloud Price Around the World"),
+                        
+                        body_text(
+                            "Pricing for Creative Cloud isn't the same everywhere – it's a classic case of regional pricing (also known as price discrimination). Companies often charge different prices in different countries based on factors like local income levels, competition, or market strategy. This means users in lower-income regions often pay much less for the same service than those in wealthier regions.",
+                            margin_bottom=Spacing.MD,
+                        ),
+                        
+                        body_text(
+                            "For example, popular streaming and software subscriptions show huge price gaps across countries. Netflix's premium plan is about $19.99 per month in the U.S. but under $5 in Turkey! Similarly, Spotify Premium costs around $10.99 in the US, yet users in Turkey pay roughly $2.50 for the same plan. These disparities present a big opportunity: by virtually \"shopping\" from a cheaper country, you could save 50–80% on your Creative Cloud subscription.",
+                            margin_bottom=Spacing.MD,
+                        ),
+                        
+                        body_text(
+                            "Which countries are cheapest for Creative Cloud? While it varies by product, certain regions consistently offer lower prices. In general, countries like Argentina, Brazil, India, Turkey, and Indonesia tend to have the lowest prices for many digital services. By contrast, wealthier markets (e.g. the USA, Canada, Western Europe, Australia) or smaller high-income countries (like Switzerland or Denmark) often have the highest prices.",
+                            margin_bottom=Spacing.MD,
+                        ),
+                        
+                        body_text(
+                            "Creative Cloud likely follows this trend: you might find its cheapest monthly rate in a country such as Turkey or India, potentially at just a few dollars, whereas the most expensive rates could be in the US or Europe.",
+                        ),
+                    ),
+                    
+                    section(
+                        heading_3("Why Does Creative Cloud Cost More or Less Depending on Country?"),
+                        
+                        body_text(
+                            "You might wonder why such price differences exist. The answer lies in companies' pricing strategies. Many services use regional pricing to make their products affordable in markets with lower incomes. This is a form of price discrimination: for instance, a streaming plan might be set at just a couple of dollars in India (to match local purchasing power) but is over $10 in the US, where consumers are used to higher prices.",
+                            margin_bottom=Spacing.MD,
+                        ),
+                        
+                        body_text(
+                            "Other factors include currency exchange rates, local taxes, and competition. The key point is that the content or service is usually identical – you're just paying a different amount for it based on where the purchase is made. Creative Cloud likely has the same features or library for subscribers globally, but if you subscribe from a low-cost country, you get the same product for less.",
+                            margin_bottom=Spacing.MD,
+                        ),
+                        
+                        body_text(
+                            "Companies accept this trade-off because they'd rather gain customers in emerging markets at lower prices than have none at all. For consumers like us, it means an opportunity to legitimately subscribe at a bargain price by choosing the right country.",
+                        ),
+                    ),
                 ),
+                flex="1",
             ),
             
-            # Content sections
-            section(
-                heading_2("Creative Cloud All Apps Global Pricing Guide 2025 – How to Pay Less with a VPN"),
-                
-                body_text(
-                    "Did you know that the cost of Creative Cloud can vary significantly depending on where you buy it? In fact, the exact same subscription might be available in another country for only a fraction of what you're paying now. This guide will show you how global pricing works for Creative Cloud and how to take advantage of it. By using a reliable VPN (Virtual Private Network), you can unlock lower regional prices for Creative Cloud without compromising on access or quality. Read on to learn how to save money on Creative Cloud in 2025 while still enjoying all its benefits!",
-                    margin_bottom=Spacing.LG,
-                ),
-            ),
+            # Footer
+            footer(),
             
-            section(
-                heading_3("Creative Cloud Price Around the World"),
-                
-                body_text(
-                    "Pricing for Creative Cloud isn't the same everywhere – it's a classic case of regional pricing (also known as price discrimination). Companies often charge different prices in different countries based on factors like local income levels, competition, or market strategy. This means users in lower-income regions often pay much less for the same service than those in wealthier regions.",
-                    margin_bottom=Spacing.MD,
-                ),
-                
-                body_text(
-                    "For example, popular streaming and software subscriptions show huge price gaps across countries. Netflix's premium plan is about $19.99 per month in the U.S. but under $5 in Turkey! Similarly, Spotify Premium costs around $10.99 in the US, yet users in Turkey pay roughly $2.50 for the same plan. These disparities present a big opportunity: by virtually \"shopping\" from a cheaper country, you could save 50–80% on your Creative Cloud subscription.",
-                    margin_bottom=Spacing.MD,
-                ),
-                
-                body_text(
-                    "Which countries are cheapest for Creative Cloud? While it varies by product, certain regions consistently offer lower prices. In general, countries like Argentina, Brazil, India, Turkey, and Indonesia tend to have the lowest prices for many digital services. By contrast, wealthier markets (e.g. the USA, Canada, Western Europe, Australia) or smaller high-income countries (like Switzerland or Denmark) often have the highest prices.",
-                    margin_bottom=Spacing.MD,
-                ),
-                
-                body_text(
-                    "Creative Cloud likely follows this trend: you might find its cheapest monthly rate in a country such as Turkey or India, potentially at just a few dollars, whereas the most expensive rates could be in the US or Europe.",
-                ),
-            ),
-            
-            section(
-                heading_3("Why Does Creative Cloud Cost More or Less Depending on Country?"),
-                
-                body_text(
-                    "You might wonder why such price differences exist. The answer lies in companies' pricing strategies. Many services use regional pricing to make their products affordable in markets with lower incomes. This is a form of price discrimination: for instance, a streaming plan might be set at just a couple of dollars in India (to match local purchasing power) but is over $10 in the US, where consumers are used to higher prices.",
-                    margin_bottom=Spacing.MD,
-                ),
-                
-                body_text(
-                    "Other factors include currency exchange rates, local taxes, and competition. The key point is that the content or service is usually identical – you're just paying a different amount for it based on where the purchase is made. Creative Cloud likely has the same features or library for subscribers globally, but if you subscribe from a low-cost country, you get the same product for less.",
-                    margin_bottom=Spacing.MD,
-                ),
-                
-                body_text(
-                    "Companies accept this trade-off because they'd rather gain customers in emerging markets at lower prices than have none at all. For consumers like us, it means an opportunity to legitimately subscribe at a bargain price by choosing the right country.",
-                ),
-            ),
-        ),
+            spacing="0",
+            align="stretch",
+            min_height="100vh",
+        )
     )
 
 def health() -> rx.Component:

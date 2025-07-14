@@ -262,10 +262,11 @@ def hero_section(*children, **props) -> rx.Component:
                 spacing=Spacing.XXL,
                 align="center",
                 text_align="center",
-                padding_y=Spacing.XXXXL,
                 **props
             )
         ),
+        padding=f"{Spacing.XXXXL} 0",
         background_color=Colors.GRAY_50,
         border_bottom=f"1px solid {Colors.GRAY_200}",
+        width="100%",
     ) 
