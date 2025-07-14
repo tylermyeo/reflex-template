@@ -59,6 +59,9 @@ app.add_page(
     title="Cheapest Country for Creative Cloud All Apps — 2025 | PriceDuck",
     description="Discover the cheapest countries to buy Creative Cloud All Apps in 2025. Save up to 80% on your Adobe subscription with our comprehensive pricing guide and VPN setup tutorial.",
     meta=[
+        # Google Search Console verification
+        {"name": "google-site-verification", "content": "kfPEJH3QDn4PcyoAzP3oUpaNysnWE3Esz3yiBXzZlqo"},
+        
         # Basic SEO
         {"name": "keywords", "content": "creative cloud pricing, adobe subscription discount, cheapest creative cloud, creative cloud vpn, global pricing creative cloud, save money adobe"},
         {"name": "author", "content": "PriceDuck"},
