@@ -57,17 +57,22 @@ def index() -> rx.Component:
                 on_change=State.set_selected_product,
                 margin_bottom="1em",
             ),
-            rx.button(
-                "Unlock cheapest price with NordVPN",
-                size="lg",
-                color_scheme="purple",
-                padding="1em 2em",
-                border_radius="0.5em",
-                font_weight="bold",
-                _hover={
-                    "transform": "translateY(-2px)",
-                    "box-shadow": "0 4px 12px rgba(107,99,246,0.3)",
-                },
+            rx.link(
+                rx.button(
+                    "Unlock cheapest price with NordVPN",
+                    size="lg",
+                    color_scheme="purple",
+                    padding="1em 2em",
+                    border_radius="0.5em",
+                    font_weight="bold",
+                    _hover={
+                        "transform": "translateY(-2px)",
+                        "box-shadow": "0 4px 12px rgba(107,99,246,0.3)",
+                    },
+                ),
+                href="https://go.nordvpn.net/aff_c?offer_id=15&aff_id=120959&url_id=902",
+                is_external=True,
+                text_decoration="none",
             ),
             rx.cond(
                 State.data_load_error,

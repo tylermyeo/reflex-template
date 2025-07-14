@@ -190,9 +190,14 @@ def index() -> rx.Component:
                             align="center",
                         ),
                         rx.spacer(),
-                        cta_button(
-                            "Unlock This Price with NordVPN",
-                            size="lg",
+                        rx.link(
+                            cta_button(
+                                "Unlock This Price with NordVPN",
+                                size="lg",
+                            ),
+                            href="https://go.nordvpn.net/aff_c?offer_id=15&aff_id=120959&url_id=902",
+                            is_external=True,
+                            text_decoration="none",
                         ),
                         align="center",
                         spacing=Spacing.XL,
