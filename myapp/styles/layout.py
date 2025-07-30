@@ -196,8 +196,8 @@ def footer() -> rx.Component:
         ),
         margin_top=Spacing.XXXXL,
         padding=f"{Spacing.XXXL} 0 {Spacing.XL} 0",
-        background_color=Colors.GRAY_50,
-        border_top=f"1px solid {Colors.GRAY_200}",
+        background_color=Colors.LIGHT_GREEN,
+        border_top=f"2px solid {Colors.PRIMARY}",
         width="100%",
     )
 

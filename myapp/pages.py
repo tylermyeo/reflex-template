@@ -128,7 +128,7 @@ def index() -> rx.Component:
                         spacing=Spacing.XS,
                     ),
                 body_text(
-                            "Creative Cloud All Apps costs less in some places. Here’s how to get the cheapest country's price.",
+                            "Creative Cloud All Apps costs less in some places. Get the cheapest country's price here.",
                             margin_bottom=Spacing.LG,
                         ),
                     padding=f"{Spacing.XXXL} 0",  # Reduced from XXXXL to XXXL (33% reduction)
