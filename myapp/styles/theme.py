@@ -7,8 +7,8 @@ that should be used consistently across the application.
 
 # Color palette
 class Colors:
-    # Primary brand colors - Purple theme to match existing button
-    PRIMARY = "#6366F1"  # Indigo
+    # Primary brand colors
+    PRIMARY = "#115735"  # Dark Green
     PRIMARY_HOVER = "#4F46E5"
     PRIMARY_LIGHT = "#E0E7FF"
     
@@ -38,7 +38,12 @@ class Colors:
     INFO = "#3B82F6"
     
     # Brand specific
-    BRAND_PRIMARY = "#8B5CF6"  # Purple for brand consistency
+    BRAND_PRIMARY = "#8B5CF6"
+    LIGHT_GREEN = "#CAFF99"
+    LIGHT_PINK = "#F7DFE8"
+
+    # Page background color
+    PAGE_BACKGROUND = "#F7F2F4"
 
 # Typography
 class Typography:

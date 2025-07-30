@@ -56,18 +56,18 @@ def secondary_button(text: str, **props) -> rx.Component:
 def cta_button(text: str, **props) -> rx.Component:
     """Call-to-action button with purple brand styling (matches existing VPN button)"""
     default_props = {
-        "background_color": Colors.SECONDARY,
+        "background_color": Colors.PRIMARY,
         "color": Colors.WHITE,
         "font_family": Typography.FONT_FAMILY,
         "font_weight": Typography.WEIGHT_BOLD,
         "font_size": Typography.TEXT_LG,
         "padding": f"{Spacing.LG} {Spacing.XXL}",
-        "border_radius": BorderRadius.LG,
+        "border_radius": BorderRadius.FULL,
         "border": "none",
         "cursor": "pointer",
         "transition": f"all {Animation.NORMAL} ease-in-out",
         "_hover": {
-            "background_color": Colors.SECONDARY_HOVER,
+            "background_color": Colors.PRIMARY + "95",
             "transform": "translateY(-2px)",
             "box_shadow": Shadows.HOVER_MD,
         },
@@ -81,13 +81,13 @@ def heading_1(text: str, **props) -> rx.Component:
     """Main page heading (H1)"""
     default_props = {
         "font_family": Typography.FONT_FAMILY,
-        "font_size": Typography.TEXT_4XL,
-        "font_weight": Typography.WEIGHT_BOLD,
+        "font_size": Typography.TEXT_5XL,
+        "font_weight": Typography.WEIGHT_EXTRABOLD,
         "font_style": Typography.FONT_STYLE,
         "font_optical_sizing": Typography.FONT_OPTICAL_SIZING,
         "font_variation_settings": Typography.FONT_VARIATION_SETTINGS,
         "line_height": Typography.LEADING_TIGHT,
-        "color": Colors.GRAY_900,
+        "color": Colors.PRIMARY,
         "margin_bottom": Spacing.LG,
         "as_": "h1",
     }
@@ -140,7 +140,8 @@ def body_text(text: str, **props) -> rx.Component:
         "font_optical_sizing": Typography.FONT_OPTICAL_SIZING,
         "font_variation_settings": Typography.FONT_VARIATION_SETTINGS,
         "line_height": Typography.LEADING_NORMAL,
-        "color": Colors.GRAY_700,
+        "color": Colors.PRIMARY,
+        "font_weight": Typography.WEIGHT_SEMIBOLD,
     }
     # Allow props to override defaults
     default_props.update(props)
@@ -155,7 +156,7 @@ def body_text_large(text: str, **props) -> rx.Component:
         "font_optical_sizing": Typography.FONT_OPTICAL_SIZING,
         "font_variation_settings": Typography.FONT_VARIATION_SETTINGS,
         "line_height": Typography.LEADING_RELAXED,
-        "color": Colors.GRAY_700,
+        "color": Colors.PRIMARY,
     }
     # Allow props to override defaults
     default_props.update(props)

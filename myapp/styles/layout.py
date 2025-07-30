@@ -21,7 +21,7 @@ def header(**props) -> rx.Component:
                         font_family=Typography.FONT_FAMILY,
                         font_size=Typography.TEXT_2XL,
                         font_weight=Typography.WEIGHT_BOLD,
-                        color=Colors.GRAY_900,
+                        color=Colors.PRIMARY,
                     ),
                     href="/",
                     text_decoration="none",
@@ -58,7 +58,7 @@ def footer() -> rx.Component:
                         font_family=Typography.FONT_FAMILY,
                         font_size=Typography.TEXT_2XL,
                         font_weight=Typography.WEIGHT_BOLD,
-                        color=Colors.GRAY_800,
+                        color=Colors.PRIMARY,
                         margin_bottom=Spacing.LG,
                     ),
                     
@@ -69,7 +69,7 @@ def footer() -> rx.Component:
                             font_family=Typography.FONT_FAMILY,
                             font_size=Typography.TEXT_SM,
                             font_weight=Typography.WEIGHT_SEMIBOLD,
-                            color=Colors.GRAY_700,
+                            color=Colors.PRIMARY,
                             margin_bottom=Spacing.SM,
                             text_transform="uppercase",
                             letter_spacing="0.05em",
@@ -157,7 +157,7 @@ def footer() -> rx.Component:
                             font_family=Typography.FONT_FAMILY,
                             font_size=Typography.TEXT_SM,
                             font_weight=Typography.WEIGHT_SEMIBOLD,
-                            color=Colors.GRAY_700,
+                            color=Colors.PRIMARY,
                             margin_bottom=Spacing.SM,
                             text_transform="uppercase",
                             letter_spacing="0.05em",
@@ -210,7 +210,7 @@ def main_layout(*children, **props) -> rx.Component:
         *children,
         min_height="100vh",
         font_family=Typography.FONT_FAMILY,
-        background_color=Colors.WHITE,
+        background_color=Colors.PAGE_BACKGROUND,
         **props
     )
 
@@ -266,7 +266,6 @@ def hero_section(*children, **props) -> rx.Component:
             )
         ),
         padding=f"{Spacing.XXXXL} 0",
-        background_color=Colors.GRAY_50,
-        border_bottom=f"1px solid {Colors.GRAY_200}",
+        background_color=Colors.PAGE_BACKGROUND,
         width="100%",
     ) 

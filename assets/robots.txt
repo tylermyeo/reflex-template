@@ -6,8 +6,8 @@ Disallow: /health
 Disallow: /api
 Disallow: /backend
 
-# Sitemap location
+# Reflex auto-generated sitemap
 Sitemap: https://www.priceduck.co.za/sitemap.xml
 
 # Be respectful to crawlers
-Crawl-delay: 1 
+Crawl-delay: 1

@@ -150,7 +150,12 @@ def index() -> rx.Component:
             
             # Hero section (full width)
             hero_section(
-                heading_1("Cheapest country for Creative Cloud All Apps — 2025"),
+                rx.vstack(
+                    heading_1("Cheapest country for", margin_bottom="0"),
+                    heading_1("Creative Cloud All Apps", margin_bottom="0"), 
+                    heading_1("2025", margin_bottom=Spacing.LG),
+                    spacing=Spacing.XS,
+                ),
                 body_text(
                             "Did you know that the cost of Creative Cloud can vary significantly depending on where you buy it? In fact, the exact same subscription might be available in another country for only a fraction of what you're paying now. This guide will show you how global pricing works for Creative Cloud and how to take advantage of it. By using a reliable VPN (Virtual Private Network), you can unlock lower regional prices for Creative Cloud without compromising on access or quality. Read on to learn how to save money on Creative Cloud in 2025 while still enjoying all its benefits!",
                             margin_bottom=Spacing.LG,
@@ -158,54 +163,51 @@ def index() -> rx.Component:
                 
                 # Cheapest price callout card
                 rx.box(
-                    rx.hstack(
-                        rx.vstack(
-                            rx.cond(
-                                State.pricing_data,
-                                rx.vstack(
-                                    body_text_small("🏆 CHEAPEST OPTION", 
-                                                   color=Colors.SUCCESS, 
-                                                   font_weight=Typography.WEIGHT_BOLD,
-                                                   text_transform="uppercase",
-                                                   letter_spacing="0.1em"),
-                                    rx.hstack(
-                                        heading_1(State.pricing_data[0]["region_name"], 
-                                                 color=Colors.GRAY_900,
-                                                 margin_bottom="0",
-                                                 font_size=Typography.TEXT_3XL),
-                                        heading_1(State.pricing_data[0]["price_display"], 
-                                                 color=Colors.SUCCESS,
-                                                 margin_bottom="0",
-                                                 font_size=Typography.TEXT_3XL),
-                                        spacing=Spacing.MD,
-                                        align="center",
+                    rx.vstack(
+                        rx.cond(
+                            State.pricing_data,
+                            rx.vstack(
+                                body_text_small("CHEAPEST OPTION", 
+                                               color=Colors.PRIMARY, 
+                                               font_weight=Typography.WEIGHT_BOLD,
+                                               text_transform="uppercase",
+                                               letter_spacing="0.1em"),
+                                heading_1(State.pricing_data[0]["region_name"], 
+                                         color=Colors.PRIMARY,
+                                         margin_bottom="0",
+                                         font_size=Typography.TEXT_2XL,
+                                         text_transform="uppercase",
+                                         font_weight=Typography.WEIGHT_BOLD),
+                                heading_1(State.pricing_data[0]["price_display"], 
+                                         color=Colors.PRIMARY,
+                                         margin_bottom="0",
+                                         font_size=Typography.TEXT_5XL),
+                                body_text("PER MONTH", color=Colors.PRIMARY, font_size=Typography.TEXT_SM),
+                                rx.link(
+                                    cta_button(
+                                        "Unlock This Price with NordVPN",
+                                        size="lg",
                                     ),
-                                    body_text("per month", color=Colors.GRAY_500, font_size=Typography.TEXT_SM),
-                                    spacing=Spacing.XS,
-                                    align="center",
+                                    href="https://go.nordvpn.net/aff_c?offer_id=15&aff_id=120959&url_id=902",
+                                    is_external=True,
+                                    text_decoration="none",
                                 ),
-                                rx.text("Loading..."),
+                                body_text_small("UP TO 70% OFF", 
+                                               color=Colors.PRIMARY, 
+                                               font_weight=Typography.WEIGHT_BOLD,
+                                               text_transform="uppercase",
+                                               letter_spacing="0.1em"),
+                                spacing=Spacing.SM,
+                                align="center",
                             ),
-                            spacing=Spacing.SM,
-                            align="center",
+                            rx.text("Loading..."),
                         ),
-                        rx.spacer(),
-                        rx.link(
-                            cta_button(
-                                "Unlock This Price with NordVPN",
-                                size="lg",
-                            ),
-                            href="https://go.nordvpn.net/aff_c?offer_id=15&aff_id=120959&url_id=902",
-                            is_external=True,
-                            text_decoration="none",
-                        ),
+                        spacing=Spacing.SM,
                         align="center",
-                        spacing=Spacing.XL,
-                        width="100%",
                     ),
-                    background_color=Colors.SUCCESS + "10",  # Light success background
-                    border=f"2px solid {Colors.SUCCESS}",
-                    border_radius=BorderRadius.LG,
+                    background_color=Colors.LIGHT_GREEN,
+                    border=f"2px solid {Colors.PRIMARY}",
+                    border_radius=BorderRadius.XXXL,
                     padding=Spacing.XL,
                     max_width="800px",
                 ),
