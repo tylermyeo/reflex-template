@@ -11,7 +11,7 @@ from .styles import (
     styled_table, table_header, table_header_cell, table_cell,
     success_text, page_wrapper, content_section, hero_section,
     main_layout, header, footer,
-    badge, BorderRadius
+    badge, BorderRadius, price_callout_card, table_callout_card
 )
 
 docs_url = "https://reflex.dev/docs/getting-started/introduction"
@@ -88,49 +88,19 @@ def pricing_table() -> rx.Component:
     """Clean pricing table without callout card"""
     return rx.box(
         styled_table(
-            table_header(
-                table_header_cell("Rank", text_align="center"),
-                table_header_cell("Country"),
-                table_header_cell("Monthly Price", text_align="right"),
-            ),
             rx.tbody(
                 rx.foreach(
                     State.pricing_data,
                     lambda item, index: rx.tr(
                         table_cell(
-                            rx.cond(
-                                index == 0,
-                                badge("1", variant="success"),
-                                rx.text(index + 1, text_align="center", font_weight=Typography.WEIGHT_MEDIUM, color=Colors.GRAY_700)
-                            ),
+                            rx.text(index + 1, text_align="center"),
                             text_align="center",
                         ),
                         table_cell(
-                            rx.cond(
-                                index == 0,
-                                rx.hstack(
-                                    body_text(item["region_name"], 
-                                             font_weight=Typography.WEIGHT_BOLD,
-                                             color=Colors.SUCCESS),
-                                    rx.text("🏆", font_size="16px"),
-                                    spacing=Spacing.SM,
-                                    align="center",
-                                ),
-                                body_text(item["region_name"], font_weight=Typography.WEIGHT_MEDIUM)
-                            ),
+                            rx.text(item["region_name"]),
                         ),
                         table_cell(
-                            rx.cond(
-                                index == 0,
-                                body_text(item["price_display"], 
-                                         font_weight=Typography.WEIGHT_BOLD,
-                                         color=Colors.SUCCESS,
-                                         text_align="right"),
-                                body_text(item["price_display"], 
-                                         font_weight=Typography.WEIGHT_MEDIUM,
-                                         color=Colors.GRAY_700,
-                                         text_align="right")
-                            ),
+                            rx.text(f"{item['price_display']} P/M", text_align="right"),
                             text_align="right",
                         ),
                     )
@@ -144,82 +114,52 @@ def pricing_table() -> rx.Component:
 
 def index() -> rx.Component:
     return main_layout(
-        rx.vstack(
-            # Header
-            header(),
-            
-            # Hero section (full width)
-            hero_section(
-                rx.vstack(
-                    heading_1("Cheapest country for", margin_bottom="0"),
-                    heading_1("Creative Cloud All Apps", margin_bottom="0"), 
-                    heading_1("2025", margin_bottom=Spacing.LG),
-                    spacing=Spacing.XS,
-                ),
+        # Fixed header
+        header(),
+        
+        # Main content with top padding for fixed header
+        rx.box(
+            rx.vstack(
+                # Hero section (full width) - reduced padding by 33%
+                hero_section(
+                    rx.vstack(
+                        heading_1("Cheapest country for", margin_bottom="0"),
+                        heading_1("Creative Cloud All Apps", margin_bottom=Spacing.LG), 
+                        spacing=Spacing.XS,
+                    ),
                 body_text(
-                            "Did you know that the cost of Creative Cloud can vary significantly depending on where you buy it? In fact, the exact same subscription might be available in another country for only a fraction of what you're paying now. This guide will show you how global pricing works for Creative Cloud and how to take advantage of it. By using a reliable VPN (Virtual Private Network), you can unlock lower regional prices for Creative Cloud without compromising on access or quality. Read on to learn how to save money on Creative Cloud in 2025 while still enjoying all its benefits!",
+                            "Creative Cloud All Apps costs less in some places. Here’s how to get the cheapest country's price.",
                             margin_bottom=Spacing.LG,
                         ),
-                
-                # Cheapest price callout card
-                rx.box(
-                    rx.vstack(
-                        rx.cond(
-                            State.pricing_data,
-                            rx.vstack(
-                                body_text_small("CHEAPEST OPTION", 
-                                               color=Colors.PRIMARY, 
-                                               font_weight=Typography.WEIGHT_BOLD,
-                                               text_transform="uppercase",
-                                               letter_spacing="0.1em"),
-                                heading_1(State.pricing_data[0]["region_name"], 
-                                         color=Colors.PRIMARY,
-                                         margin_bottom="0",
-                                         font_size=Typography.TEXT_2XL,
-                                         text_transform="uppercase",
-                                         font_weight=Typography.WEIGHT_BOLD),
-                                heading_1(State.pricing_data[0]["price_display"], 
-                                         color=Colors.PRIMARY,
-                                         margin_bottom="0",
-                                         font_size=Typography.TEXT_5XL),
-                                body_text("PER MONTH", color=Colors.PRIMARY, font_size=Typography.TEXT_SM),
-                                rx.link(
-                                    cta_button(
-                                        "Unlock This Price with NordVPN",
-                                        size="lg",
-                                    ),
-                                    href="https://go.nordvpn.net/aff_c?offer_id=15&aff_id=120959&url_id=902",
-                                    is_external=True,
-                                    text_decoration="none",
-                                ),
-                                body_text_small("UP TO 70% OFF", 
-                                               color=Colors.PRIMARY, 
-                                               font_weight=Typography.WEIGHT_BOLD,
-                                               text_transform="uppercase",
-                                               letter_spacing="0.1em"),
-                                spacing=Spacing.SM,
-                                align="center",
-                            ),
-                            rx.text("Loading..."),
-                        ),
-                        spacing=Spacing.SM,
-                        align="center",
-                    ),
-                    background_color=Colors.LIGHT_GREEN,
-                    border=f"2px solid {Colors.PRIMARY}",
-                    border_radius=BorderRadius.XXXL,
-                    padding=Spacing.XL,
-                    max_width="800px",
+                    padding=f"{Spacing.XXXL} 0",  # Reduced from XXXXL to XXXL (33% reduction)
                 ),
-            ),
             
             # Main content
             rx.box(
                 content_section(
-                    # Pricing table section
-                    section(
-                        heading_2("Top 10 cheapest countries for Creative Cloud All Apps"),
-                        pricing_table(),
+                    # Price callout card moved from hero to main content
+                    rx.cond(
+                        State.pricing_data,
+                        price_callout_card(
+                            State.pricing_data[0]["region_name"],
+                            State.pricing_data[0]["price_display"],
+                        ),
+                        price_callout_card(
+                            "Loading...",
+                            "Loading...",
+                        ),
+                    ),
+                    
+                    # Table callout card
+                    table_callout_card(
+                        rx.center(
+                            section(
+                                heading_2("Top 10 cheapest countries for Creative Cloud All Apps",
+                                          margin_bottom=Spacing.XL),
+                                pricing_table(),
+                            ),
+                            width="100%",
+                        ),
                     ),
                     
                     # Content sections                
@@ -273,7 +213,9 @@ def index() -> rx.Component:
             spacing="0",
             align="stretch",
             min_height="100vh",
-        )
+        ),
+        padding_top="36px",  # Add top padding for fixed header
+    )
     )
 
 def health() -> rx.Component:

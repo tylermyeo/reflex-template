@@ -26,7 +26,7 @@ from .components import (
     error_text,
     badge
 )
-from .layout import header, footer, main_layout, page_wrapper, content_section, hero_section
+from .layout import header, footer, main_layout, page_wrapper, content_section, hero_section, price_callout_card, table_callout_card
 
 __all__ = [
     # Theme tokens
@@ -62,4 +62,6 @@ __all__ = [
     "page_wrapper",
     "content_section",
     "hero_section",
+    "price_callout_card",
+    "table_callout_card",
 ] 

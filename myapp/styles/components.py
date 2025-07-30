@@ -105,9 +105,12 @@ def heading_2(text: str, **props) -> rx.Component:
         "font_optical_sizing": Typography.FONT_OPTICAL_SIZING,
         "font_variation_settings": Typography.FONT_VARIATION_SETTINGS,
         "line_height": Typography.LEADING_TIGHT,
-        "color": Colors.GRAY_800,
+        "color": Colors.PRIMARY,
         "margin_bottom": Spacing.MD,
         "as_": "h2",
+        "max_width": "20ch",  # Approximately 4 words (5 chars per word average)
+        "text_align": "center",
+        "margin_x": "auto",  # Center the block itself
     }
     # Allow props to override defaults
     default_props.update(props)
@@ -142,6 +145,7 @@ def body_text(text: str, **props) -> rx.Component:
         "line_height": Typography.LEADING_NORMAL,
         "color": Colors.PRIMARY,
         "font_weight": Typography.WEIGHT_SEMIBOLD,
+        "max_width": "45ch",  # Approximately 9 words (5 chars per word average)
     }
     # Allow props to override defaults
     default_props.update(props)
@@ -157,6 +161,7 @@ def body_text_large(text: str, **props) -> rx.Component:
         "font_variation_settings": Typography.FONT_VARIATION_SETTINGS,
         "line_height": Typography.LEADING_RELAXED,
         "color": Colors.PRIMARY,
+        "max_width": "50ch",  # Approximately 9 words (larger font)
     }
     # Allow props to override defaults
     default_props.update(props)
@@ -169,6 +174,7 @@ def body_text_small(text: str, **props) -> rx.Component:
         "font_size": Typography.TEXT_SM,
         "line_height": Typography.LEADING_NORMAL,
         "color": Colors.GRAY_600,
+        "max_width": "40ch",  # Approximately 9 words (smaller font)
     }
     # Allow props to override defaults
     default_props.update(props)
@@ -219,17 +225,15 @@ def styled_table(*children, **props) -> rx.Component:
         width="100%",
         overflow_x="auto",
         border_radius=BorderRadius.LG,
-        border=f"1px solid {Colors.GRAY_200}",
-        background_color=Colors.WHITE,
+        background_color="transparent",  # Make background transparent
         **props
     )
 
 def table_header(*children, **props) -> rx.Component:
-    """Styled table header"""
+    """Styled table header - removed as requested"""
     return rx.thead(
         rx.tr(
             *children,
-            background_color=Colors.GRAY_50,
         ),
         **props
     )
@@ -237,8 +241,8 @@ def table_header(*children, **props) -> rx.Component:
 def table_header_cell(text: str, **props) -> rx.Component:
     """Styled table header cell"""
     default_props = {
-        "font_weight": Typography.WEIGHT_SEMIBOLD,
-        "color": Colors.GRAY_700,
+        "font_weight": Typography.WEIGHT_BOLD,  # Make text one level bolder
+        "color": Colors.PRIMARY,  # Use PRIMARY color
         "padding": Spacing.MD,
         "text_align": "left",
     }
@@ -250,7 +254,10 @@ def table_cell(content, **props) -> rx.Component:
     """Styled table cell"""
     default_props = {
         "padding": Spacing.MD,
-        "color": Colors.GRAY_700,
+        "color": Colors.PRIMARY,  # Use PRIMARY color
+        "font_weight": Typography.WEIGHT_EXTRABOLD,  # Make text bolder
+        "font_size": Typography.TEXT_LG,  # Make text bigger
+        "border_bottom": f"2px solid {Colors.PRIMARY}",  # Match callout card border thickness and color
     }
     # Allow props to override defaults
     default_props.update(props)
