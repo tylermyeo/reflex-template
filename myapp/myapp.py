@@ -5,6 +5,7 @@ import reflex as rx
 from .pages import index
 from .pages import health
 from .pages import not_found
+from .pages import cms_rows, make_cms_page
 
 from .api import root
 
@@ -110,5 +111,17 @@ app.add_custom_404_page(
     description=not_found_text,
     component=not_found(not_found_text)
 )
+
+
+# Dynamically add a page for each CMS row (no filters yet)
+for row in cms_rows:
+    slug = (row.get("Slug") or "").strip()
+    if not slug:
+        continue
+    route = "/" + slug.lstrip("/")
+    page_fn = make_cms_page(row)
+    page_title = row.get("SEO Meta Title", "Untitled")
+    page_desc = row.get("SEO Meta Description", "No description")
+    app.add_page(page_fn, route=route, title=page_title, description=page_desc)
 
 app.compile()

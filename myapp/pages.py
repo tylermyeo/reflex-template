@@ -17,6 +17,38 @@ from .styles import (
 docs_url = "https://reflex.dev/docs/getting-started/introduction"
 filename = f"{config.app_name}/{config.app_name}.py"
 
+# CMS pages loader (reads myapp/data/cms_pages.json)
+CMS_PAGES_PATH = os.path.join(os.path.dirname(__file__), "data", "cms_pages.json")
+
+def load_cms_pages():
+    """Load CMS pages JSON (array of rows) -> Python list[dict]"""
+    try:
+        with open(CMS_PAGES_PATH, "r", encoding="utf-8") as f:
+            data = json.load(f)
+        if not isinstance(data, list):
+            print("cms_pages.json did not contain a JSON array; using empty list")
+            return []
+        return data
+    except Exception as e:
+        print(f"Error loading cms_pages.json: {e}")
+        return []
+
+# Make rows available to myapp.py for routing
+cms_rows: list[dict] = load_cms_pages()
+
+# Page factory (title-only for first test)
+def make_cms_page(row: dict):
+    """Return a Reflex page function that renders only the Page Title"""
+    title = row.get("Page Title", "Untitled")
+
+    def page() -> rx.Component:
+        return page_wrapper(
+            content_section(
+                heading_1(title),
+            ),
+        )
+    return page
+
 # Function to load and process pricing data from JSON
 def load_pricing_data():
     """Load pricing data from JSON file and process it"""
