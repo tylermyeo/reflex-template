@@ -288,11 +288,11 @@ def callout_card(*children, background_color: str = None, border_color: str = No
         **default_props
     )
 
-def price_callout_card(region_name: str, price_display: str, **props) -> rx.Component:
+def price_callout_card(title: str, region_name: str, price_display: str, **props) -> rx.Component:
     """Price callout card template with pricing information"""
     return callout_card(
         rx.vstack(
-            body_text_small("CHEAPEST OPTION", 
+            body_text_small(title, 
                            color=Colors.PRIMARY, 
                            font_weight=Typography.WEIGHT_BOLD,
                            text_transform="uppercase",
