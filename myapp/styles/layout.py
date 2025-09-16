@@ -288,7 +288,37 @@ def callout_card(*children, background_color: str = None, border_color: str = No
         **default_props
     )
 
-def price_callout_card(title: str, region_name: str, price_display: str, **props) -> rx.Component:
+# Latest price callout card
+def callout_card_latest(title: str, region_name: str, price_display: str, last_price_update: str, **props) -> rx.Component:
+    """Price callout card template with pricing information"""
+    return callout_card(
+        rx.vstack(
+            body_text_small(title, 
+                           color=Colors.PRIMARY, 
+                           font_weight=Typography.WEIGHT_BOLD,
+                           text_transform="uppercase",
+                           letter_spacing="0.1em"),
+            heading_1(region_name, 
+                     color=Colors.PRIMARY,
+                     margin_bottom="0",
+                     font_size=Typography.TEXT_2XL,
+                     text_transform="uppercase",
+                     font_weight=Typography.WEIGHT_BOLD),
+            heading_1(price_display, 
+                     color=Colors.PRIMARY,
+                     margin_bottom="0",
+                     font_size=Typography.TEXT_5XL),
+            body_text("PER MONTH", color=Colors.PRIMARY, font_size=Typography.TEXT_SM),
+            body_text_small(f"Last updated {last_price_update}", color=Colors.PRIMARY, font_size=Typography.TEXT_SM),
+            spacing=Spacing.SM,
+            align="center",
+        ),
+        background_color=Colors.LIGHT_PEACH,
+        **props
+    )
+
+# Cheapest price callout card
+def callout_card_cheapest(title: str, region_name: str, price_display: str, **props) -> rx.Component:
     """Price callout card template with pricing information"""
     return callout_card(
         rx.vstack(
@@ -328,6 +358,7 @@ def price_callout_card(title: str, region_name: str, price_display: str, **props
         **props
     )
 
+# Table callout card
 def table_callout_card(*children, **props) -> rx.Component:
     """Table callout card template for data tables"""
     return callout_card(

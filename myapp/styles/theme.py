@@ -13,7 +13,7 @@ class Colors:
     PRIMARY_LIGHT = "#E0E7FF"
     
     # Secondary colors - Purple to match existing VPN button
-    SECONDARY = "#8B5CF6"  # Purple (matches existing button color_scheme="purple")
+    SECONDARY = "#8B5CF6"  # Purple
     SECONDARY_HOVER = "#7C3AED"
     ACCENT = "#10B981"     # Emerald for success/highlights
     
@@ -41,6 +41,7 @@ class Colors:
     BRAND_PRIMARY = "#8B5CF6"
     LIGHT_GREEN = "#CAFF99"
     LIGHT_PINK = "#F7DFE8"
+    LIGHT_PEACH = "#FFB199"
 
     # Page background color
     PAGE_BACKGROUND = "#F7F2F4"

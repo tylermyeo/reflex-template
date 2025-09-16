@@ -11,7 +11,7 @@ from .styles import (
     styled_table, table_header, table_header_cell, table_cell,
     success_text, page_wrapper, content_section, hero_section,
     main_layout, header, footer,
-    badge, BorderRadius, price_callout_card, table_callout_card
+    badge, BorderRadius, callout_card_latest, callout_card_cheapest, table_callout_card
 )
 
 docs_url = "https://reflex.dev/docs/getting-started/introduction"
@@ -46,16 +46,16 @@ def make_cms_page(row: dict):
     meta_title = row.get("SEO Meta Title", "Untitled")
     meta_description = row.get("SEO Meta Description", "No description")
     useful_extras = row.get("Useful Extras", "No useful extras")
-    latest_price = row.get("Latest Price", "No latest price")
+    latest_price_dollar= row.get("Latest Price ($)", "No latest price")
     latest_price_currency = row.get("Latest Price Currency", "No latest price currency")
     latest_price_period = row.get("Period", "No latest price period")
-    last_price_update = row.get("Last Price Update", "No last price update")
+    last_price_update = row.get("Last Price Update - Human", "No last price update")
     all_pricing_rows = row.get("All Pricing Rows", "No all pricing rows")
     latest_pricing_row = row.get("Latest Pricing Row", "No latest pricing row")
     page_id = row.get("Page ID", "No page ID")
     canonical_path = row.get("Canonical Path", "No canonical path")
     region_name = row.get("Region", "No region name")
-    latest_price_display = f"${latest_price:.2f}"
+    latest_price_display = f"${latest_price_dollar:.2f}"
 
     def page() -> rx.Component:
         return main_layout(
@@ -68,7 +68,8 @@ def make_cms_page(row: dict):
                 # Hero section (full width) - reduced padding by 33%
                 hero_section(
                     rx.vstack(
-                        heading_1(title), 
+                        heading_1(title),
+                        body_text(intro), 
                         spacing=Spacing.XS,
                     ),
                     padding=f"{Spacing.XXXL} 0",
@@ -77,12 +78,13 @@ def make_cms_page(row: dict):
             # Main content
             rx.box(
                 content_section(
-                    price_callout_card(
+                    callout_card_latest(
                         "LATEST PRICE",
                         region_name,
                         latest_price_display,
+                        last_price_update,
                     ),
-                    price_callout_card(
+                    callout_card_cheapest(
                         "CHEAPEST PRICE",
                         region_name,
                         latest_price_display,
@@ -280,12 +282,12 @@ def index() -> rx.Component:
                     # Price callout card moved from hero to main content
                     rx.cond(
                         State.pricing_data,
-                        price_callout_card(
+                        callout_card_cheapest(
                             "CHEAPEST PRICE",
                             State.pricing_data[0]["region_name"],
                             State.pricing_data[0]["price_display"],
                         ),
-                        price_callout_card(
+                        callout_card_cheapest(
                             "CHEAPEST PRICE",
                             "Loading...",
                             "Loading...",
