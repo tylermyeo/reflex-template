@@ -15,7 +15,5 @@ config = ReflextemplateConfig(
     api_url=f'https://{os.environ[railway_domain]}/backend' if railway_domain in os.environ else "http://127.0.0.1:8000",
     
     # Set production domain for sitemap generation
-    frontend_url="https://www.priceduck.co.za",
-    
-    # Font handled by app config now
+    deploy_url="https://www.priceduck.co.za",
 )
