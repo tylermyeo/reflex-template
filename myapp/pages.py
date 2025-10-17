@@ -46,7 +46,7 @@ def make_cms_page(row: dict):
     meta_title = row.get("SEO Meta Title", "Untitled")
     meta_description = row.get("SEO Meta Description", "No description")
     useful_extras = row.get("Useful Extras", "No useful extras")
-    latest_price_dollar= row.get("Latest Price ($)", "No latest price")
+    latest_price_dollar = row.get("Latest Price ($)", "No latest price")
     latest_price_currency = row.get("Latest Price Currency", "No latest price currency")
     latest_price_period = row.get("Period", "No latest price period")
     last_price_update = row.get("Last Price Update - Human", "No last price update")
@@ -56,7 +56,9 @@ def make_cms_page(row: dict):
     canonical_path = row.get("Canonical Path", "No canonical path")
     region_name = row.get("Region", "No region name")
     region_name_cheapest = row.get("Cheapest Region", "No cheapest region name")
+    cheapest_region_price = row.get("Cheapest Region Price ($)", "No cheapest region price")
     latest_price_display = f"${latest_price_dollar:.2f}"
+    cheapest_region_price_display = f"${cheapest_region_price:.2f}"
 
     def page() -> rx.Component:
         return main_layout(
@@ -88,7 +90,7 @@ def make_cms_page(row: dict):
                     callout_card_cheapest(
                         "CHEAPEST PRICE",
                         region_name_cheapest,
-                        latest_price_display,
+                        cheapest_region_price_display,
                     ),
                 ),
                 
