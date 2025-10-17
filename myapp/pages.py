@@ -55,6 +55,7 @@ def make_cms_page(row: dict):
     page_id = row.get("Page ID", "No page ID")
     canonical_path = row.get("Canonical Path", "No canonical path")
     region_name = row.get("Region", "No region name")
+    region_name_cheapest = row.get("Cheapest Region", "No cheapest region name")
     latest_price_display = f"${latest_price_dollar:.2f}"
 
     def page() -> rx.Component:
@@ -86,7 +87,7 @@ def make_cms_page(row: dict):
                     ),
                     callout_card_cheapest(
                         "CHEAPEST PRICE",
-                        region_name,
+                        region_name_cheapest,
                         latest_price_display,
                     ),
                 ),
