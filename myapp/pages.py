@@ -36,6 +36,34 @@ def load_cms_pages():
 # Make rows available to myapp.py for routing
 cms_rows: list[dict] = load_cms_pages()
 
+# Derive pricing table data directly from CMS rows (exported by n8n)
+def derive_pricing_from_cms(rows: list[dict]) -> list[dict]:
+    items: list[dict] = []
+    for row in rows:
+        region = (row.get("Region") or "").strip()
+        amount = row.get("Latest Price ($)")
+        period = (row.get("Period") or "/mo").strip()
+
+        if not region or amount is None:
+            continue
+
+        try:
+            amt = float(amount)
+        except (TypeError, ValueError):
+            continue
+
+        items.append(
+            {
+                "region_name": region,
+                "amount": amt,
+                "price_display": f"${amt:.2f} {period}",
+            }
+        )
+
+    # Sort by amount (cheapest first) and take top 10
+    items.sort(key=lambda x: x["amount"])
+    return items[:10]
+
 # Page factory
 def make_cms_page(row: dict):
     """Return a Reflex page function"""
@@ -162,66 +190,11 @@ def make_cms_page(row: dict):
     )
     return page
 
-# Function to load and process pricing data from JSON
-def load_pricing_data():
-    """Load pricing data from JSON file and process it"""
-    try:
-        data_path = os.path.join(os.path.dirname(__file__), "data", "pricing.json")
-        with open(data_path, "r") as f:
-            raw_data = json.load(f)
-        
-        # Process the data
-        processed_data = {}
-        
-        for item in raw_data:
-            region_name = item.get("region_name", "").strip()
-            amount = item.get("amount", 0)
-            timestamp = item.get("timestamp", "")
-            
-            # Skip if no region name or amount
-            if not region_name or not amount:
-                continue
-                
-            # Skip non-English characters (basic check for Arabic/other scripts)
-            if not all(ord(char) < 128 for char in region_name):
-                continue
-                
-            # Convert amount to float and format
-            try:
-                amount_float = float(amount)
-                if amount_float <= 0:
-                    continue
-            except (ValueError, TypeError):
-                continue
-            
-            # Keep only the most recent entry for each region
-            if region_name not in processed_data or timestamp > processed_data[region_name]["timestamp"]:
-                processed_data[region_name] = {
-                    "region_name": region_name,
-                    "amount": amount_float,
-                    "price_display": f"${amount_float:.2f}",
-                    "timestamp": timestamp
-                }
-        
-        # Convert to list and sort by price (cheapest first)
-        result = list(processed_data.values())
-        result.sort(key=lambda x: x["amount"])
-        
-        # Return only top 10
-        return result[:10]
-        
-    except Exception as e:
-        print(f"Error loading pricing data: {e}")
-        # Fallback data if file doesn't exist
-        return [
-            {"region_name": "Turkey", "amount": 12.99, "price_display": "$12.99"},
-            {"region_name": "India", "amount": 15.99, "price_display": "$15.99"},
-            {"region_name": "Brazil", "amount": 19.99, "price_display": "$19.99"},
-        ]
+    
 
 class State(rx.State):
-    # Load pricing data with proper type annotation
-    pricing_data: list[dict] = load_pricing_data()
+    # Pricing data derived from CMS export
+    pricing_data: list[dict] = derive_pricing_from_cms(cms_rows)
     
     @rx.var
     def current_year(self) -> str:
@@ -245,7 +218,7 @@ def pricing_table() -> rx.Component:
                             rx.text(item["region_name"]),
                         ),
                         table_cell(
-                            rx.text(f"{item['price_display']} P/M", text_align="right"),
+                            rx.text(item["price_display"], text_align="right"),
                             text_align="right",
                         ),
                     )
