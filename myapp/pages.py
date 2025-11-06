@@ -11,7 +11,7 @@ from .styles import (
     styled_table, table_header, table_header_cell, table_cell,
     success_text, page_wrapper, content_section, hero_section,
     main_layout, header, footer,
-    badge, BorderRadius, callout_card_latest, callout_card_cheapest, table_callout_card
+    badge, BorderRadius, callout_card_latest, callout_card_cheapest, table_callout_card, text_link
 )
 
 docs_url = "https://reflex.dev/docs/getting-started/introduction"
@@ -57,6 +57,7 @@ def derive_pricing_from_cms(rows: list[dict]) -> list[dict]:
                 "region_name": region,
                 "amount": amt,
                 "price_display": f"${amt:.2f} {period}",
+                "slug": (row.get("Slug") or "").strip(),
             }
         )
 
@@ -83,10 +84,7 @@ def make_cms_page(row: dict):
     page_id = row.get("Page ID", "No page ID")
     canonical_path = row.get("Canonical Path", "No canonical path")
     region_name = row.get("Region", "No region name")
-    region_name_cheapest = row.get("Cheapest Region", "No cheapest region name")
-    cheapest_region_price = row.get("Cheapest Region Price ($)", "No cheapest region price")
     latest_price_display = f"${latest_price_dollar:.2f}"
-    cheapest_region_price_display = f"${cheapest_region_price:.2f}"
 
     def page() -> rx.Component:
         return main_layout(
@@ -115,10 +113,18 @@ def make_cms_page(row: dict):
                         latest_price_display,
                         last_price_update,
                     ),
-                    callout_card_cheapest(
-                        "CHEAPEST PRICE",
-                        region_name_cheapest,
-                        cheapest_region_price_display,
+                    rx.cond(
+                        State.pricing_data,
+                        callout_card_cheapest(
+                            "CHEAPEST PRICE",
+                            State.pricing_data[0]["region_name"],
+                            State.pricing_data[0]["price_display"],
+                        ),
+                        callout_card_cheapest(
+                            "CHEAPEST PRICE",
+                            "Loading...",
+                            "Loading...",
+                        ),
                     ),
                 ),
                 
@@ -215,7 +221,10 @@ def pricing_table() -> rx.Component:
                             text_align="center",
                         ),
                         table_cell(
-                            rx.text(item["region_name"]),
+                            text_link(
+                                item["region_name"],
+                                href=f"/{item['slug']}",
+                            ),
                         ),
                         table_cell(
                             rx.text(item["price_display"], text_align="right"),

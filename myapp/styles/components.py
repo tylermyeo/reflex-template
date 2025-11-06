@@ -180,6 +180,25 @@ def body_text_small(text: str, **props) -> rx.Component:
     default_props.update(props)
     return rx.text(text, **default_props)
 
+# Hyperlink component
+def text_link(text: str, href: str, **props) -> rx.Component:
+    """Text hyperlink with consistent styling across the site."""
+    default_text_props = {
+        "font_family": Typography.FONT_FAMILY,
+        "font_size": Typography.TEXT_LG,
+        "font_weight": Typography.WEIGHT_EXTRABOLD,
+        "color": Colors.PRIMARY,
+        "text_decoration": "underline",
+    }
+    # Allow overrides
+    default_text_props.update(props)
+
+    return rx.link(
+        rx.text(text, **default_text_props),
+        href=href,
+        _hover={"opacity": 0.9},
+    )
+
 # Layout components
 def card(*children, **props) -> rx.Component:
     """Card container with shadow and rounded corners"""
