@@ -118,7 +118,7 @@ def make_cms_page(row: dict):
                         callout_card_cheapest(
                             "CHEAPEST PRICE",
                             State.pricing_data[0]["region_name"],
-                            State.pricing_data[0]["price_display"],
+                            State.cheapest_price_display,
                         ),
                         callout_card_cheapest(
                             "CHEAPEST PRICE",
@@ -126,17 +126,17 @@ def make_cms_page(row: dict):
                             "Loading...",
                         ),
                     ),
-                ),
-                
-                # Table callout card
-                table_callout_card(
-                    rx.center(
-                        section(
-                            heading_2("Top 10 cheapest countries for Creative Cloud All Apps",
-                                        margin_bottom=Spacing.XL),
-                            pricing_table(),
+                    
+                    # Table callout card
+                    table_callout_card(
+                        rx.center(
+                            section(
+                                heading_2("Top 10 cheapest countries for Creative Cloud All Apps",
+                                            margin_bottom=Spacing.XL),
+                                pricing_table(),
+                            ),
+                            width="100%",
                         ),
-                        width="100%",
                     ),
                 ),
                 
@@ -207,6 +207,13 @@ class State(rx.State):
         """Get the current year"""
         import datetime
         return str(datetime.datetime.now().year)
+    
+    @rx.var
+    def cheapest_price_display(self) -> str:
+        """Get the cheapest price formatted without /mo"""
+        if not self.pricing_data:
+            return "Loading..."
+        return f"${self.pricing_data[0]['amount']:.2f}"
 
 def pricing_table() -> rx.Component:
     """Clean pricing table without callout card"""
@@ -270,7 +277,7 @@ def index() -> rx.Component:
                         callout_card_cheapest(
                             "CHEAPEST PRICE",
                             State.pricing_data[0]["region_name"],
-                            State.pricing_data[0]["price_display"],
+                            State.cheapest_price_display,
                         ),
                         callout_card_cheapest(
                             "CHEAPEST PRICE",
