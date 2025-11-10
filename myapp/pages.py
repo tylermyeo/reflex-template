@@ -65,6 +65,8 @@ def derive_pricing_from_cms(rows: list[dict]) -> list[dict]:
     items.sort(key=lambda x: x["amount"])
     return items[:10]
 
+PRICING_DATA: list[dict] = derive_pricing_from_cms(cms_rows)
+
 # Page factory
 def make_cms_page(row: dict):
     """Return a Reflex page function"""
@@ -85,6 +87,24 @@ def make_cms_page(row: dict):
     canonical_path = row.get("Canonical Path", "No canonical path")
     region_name = row.get("Region", "No region name")
     latest_price_display = f"${latest_price_dollar:.2f}"
+
+    # Shared variables for page content (used across sections)
+    product_name = ((row.get("Product") or title) or "This product").strip()
+
+    cheapest_entry = PRICING_DATA[0] if PRICING_DATA else None
+    if cheapest_entry:
+        cheapest_region_name = cheapest_entry["region_name"]
+        cheapest_region_price_display = f"${cheapest_entry['amount']:.2f}"
+    else:
+        cheapest_region_name = "Loading..."
+        cheapest_region_price_display = "Loading..."
+
+    vpn_affiliate_link = "https://go.nordvpn.net/aff_c?offer_id=15&aff_id=120959&url_id=902"
+    how_to_heading = (
+        f"How to access {cheapest_region_name} pricing"
+        if cheapest_region_name != "Loading..."
+        else "How to access the lowest Creative Cloud pricing"
+    )
 
     def page() -> rx.Component:
         return main_layout(
@@ -117,7 +137,7 @@ def make_cms_page(row: dict):
                         State.pricing_data,
                         callout_card_cheapest(
                             "CHEAPEST PRICE",
-                            State.pricing_data[0]["region_name"],
+                            State.cheapest_region_name,
                             State.cheapest_price_display,
                         ),
                         callout_card_cheapest(
@@ -140,27 +160,109 @@ def make_cms_page(row: dict):
                     ),
                 ),
                 
-                # Content sections                
+                # Content sections
                 section(
-                    heading_2("Creative Cloud Price Around the World"),
-                    
+                    heading_2(how_to_heading),
                     body_text(
-                        "Pricing for Creative Cloud isn't the same everywhere – it's a classic case of regional pricing (also known as price discrimination). Companies often charge different prices in different countries based on factors like local income levels, competition, or market strategy. This means users in lower-income regions often pay much less for the same service than those in wealthier regions.",
+                        f"{product_name} uses regional pricing, which means the same subscription costs {cheapest_region_price_display}/month in {cheapest_region_name}—significantly less than in many other countries. Here's how to access the lower price:",
+                        margin_bottom=Spacing.LG,
+                    ),
+                    heading_3("What You'll Need", margin_bottom=Spacing.SM),
+                    rx.unordered_list(
+                        rx.list_item(
+                            body_text(
+                                f"A VPN service with servers in {cheapest_region_name}",
+                                margin_bottom=Spacing.XS,
+                            )
+                        ),
+                        rx.list_item(
+                            body_text(
+                                "An international Visa or Mastercard (Wise or Revolut also work well)",
+                                margin_bottom=Spacing.XS,
+                            )
+                        ),
+                        rx.list_item(
+                            body_text(
+                                "10–15 minutes to walk through the setup",
+                                margin_bottom=Spacing.XS,
+                            )
+                        ),
+                        padding_left=Spacing.LG,
+                        margin_bottom=Spacing.LG,
+                    ),
+                    heading_3("Step-by-Step Instructions", margin_bottom=Spacing.SM),
+                    body_text(
+                        f"Follow these simple steps to unlock the {cheapest_region_name} rate for {product_name}.",
                         margin_bottom=Spacing.MD,
                     ),
-                    
-                    body_text(
-                        "For example, popular streaming and software subscriptions show huge price gaps across countries. Netflix's premium plan is about $19.99 per month in the U.S. but under $5 in Turkey! Similarly, Spotify Premium costs around $10.99 in the US, yet users in Turkey pay roughly $2.50 for the same plan. These disparities present a big opportunity: by virtually \"shopping\" from a cheaper country, you could save 50–80% on your Creative Cloud subscription.",
-                        margin_bottom=Spacing.MD,
+                    rx.ordered_list(
+                        rx.list_item(
+                            rx.vstack(
+                                body_text(
+                                    "Get a VPN subscription with reliable servers in the cheapest region.",
+                                    margin_bottom=Spacing.XS,
+                                ),
+                                text_link(
+                                    f"Get NordVPN (best VPN for {product_name})",
+                                    href=vpn_affiliate_link,
+                                ),
+                            ),
+                            margin_bottom=Spacing.MD,
+                        ),
+                        rx.list_item(
+                            body_text(
+                                f"Open your VPN app and connect to a server located in {cheapest_region_name}. Wait a few seconds until the VPN confirms the connection.",
+                                margin_bottom=Spacing.MD,
+                            ),
+                        ),
+                        rx.list_item(
+                            body_text(
+                                "Clear your browser cookies and cached files for the last 24 hours. Using an incognito or private window works just as well.",
+                                margin_bottom=Spacing.MD,
+                            ),
+                        ),
+                        rx.list_item(
+                            body_text(
+                                f"Visit the {cheapest_region_name} version of the {product_name} website while the VPN stays on. The pricing should now reflect that region.",
+                                margin_bottom=Spacing.MD,
+                            ),
+                        ),
+                        rx.list_item(
+                            body_text(
+                                f"Checkout using an international payment method. Make sure the card allows transactions in {cheapest_region_name}. Wise or Revolut are handy backup options.",
+                                margin_bottom=Spacing.MD,
+                            ),
+                        ),
+                        rx.list_item(
+                            body_text(
+                                f"Once payment succeeds, enjoy {product_name} at the lower {cheapest_region_name} price—VPN only needed for signup unless you want to keep browsing from that region.",
+                                margin_bottom=Spacing.MD,
+                            ),
+                        ),
+                        padding_left=Spacing.LG,
+                        margin_bottom=Spacing.LG,
                     ),
-                    
-                    body_text(
-                        "Which countries are cheapest for Creative Cloud? While it varies by product, certain regions consistently offer lower prices. In general, countries like Argentina, Brazil, India, Turkey, and Indonesia tend to have the lowest prices for many digital services. By contrast, wealthier markets (e.g. the USA, Canada, Western Europe, Australia) or smaller high-income countries (like Switzerland or Denmark) often have the highest prices.",
-                        margin_bottom=Spacing.MD,
-                    ),
-                    
-                    body_text(
-                        "Creative Cloud likely follows this trend: you might find its cheapest monthly rate in a country such as Turkey or India, potentially at just a few dollars, whereas the most expensive rates could be in the US or Europe.",
+                    heading_3("Important Considerations", margin_bottom=Spacing.SM),
+                    rx.unordered_list(
+                        rx.list_item(
+                            body_text(
+                                "Terms of Service: Using a VPN to access regional pricing may conflict with the provider's policies. Review the risks before moving ahead.",
+                                margin_bottom=Spacing.XS,
+                            )
+                        ),
+                        rx.list_item(
+                            body_text(
+                                f"Payment continuity: Check that your payment method will keep working for future {product_name} renewals.",
+                                margin_bottom=Spacing.XS,
+                            )
+                        ),
+                        rx.list_item(
+                            body_text(
+                                "VPN cost: Remember to factor the VPN subscription into your overall savings.",
+                                margin_bottom=Spacing.XS,
+                            )
+                        ),
+                        padding_left=Spacing.LG,
                     ),
                 ),
                 
@@ -200,7 +302,7 @@ def make_cms_page(row: dict):
 
 class State(rx.State):
     # Pricing data derived from CMS export
-    pricing_data: list[dict] = derive_pricing_from_cms(cms_rows)
+    pricing_data: list[dict] = PRICING_DATA
     
     @rx.var
     def current_year(self) -> str:
@@ -214,6 +316,21 @@ class State(rx.State):
         if not self.pricing_data:
             return "Loading..."
         return f"${self.pricing_data[0]['amount']:.2f}"
+
+    @rx.var
+    def cheapest_region_name(self) -> str:
+        """Get the region name associated with the cheapest price"""
+        if not self.pricing_data:
+            return "Loading..."
+        return self.pricing_data[0]["region_name"]
+
+    @rx.var
+    def cheapest_region_heading(self) -> str:
+        """Build the heading text using the cheapest region"""
+        region = self.cheapest_region_name
+        if region == "Loading...":
+            return "How to access the lowest Creative Cloud pricing"
+        return f"How to access {region} pricing"
 
 def pricing_table() -> rx.Component:
     """Clean pricing table without callout card"""
@@ -276,7 +393,7 @@ def index() -> rx.Component:
                         State.pricing_data,
                         callout_card_cheapest(
                             "CHEAPEST PRICE",
-                            State.pricing_data[0]["region_name"],
+                            State.cheapest_region_name,
                             State.cheapest_price_display,
                         ),
                         callout_card_cheapest(
