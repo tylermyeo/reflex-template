@@ -13,6 +13,7 @@ from .styles import (
     main_layout, header, footer,
     badge, BorderRadius, callout_card_latest, callout_card_cheapest, table_callout_card, text_link
 )
+from .styles.theme import Animation
 
 docs_url = "https://reflex.dev/docs/getting-started/introduction"
 filename = f"{config.app_name}/{config.app_name}.py"
@@ -66,6 +67,33 @@ def derive_pricing_from_cms(rows: list[dict]) -> list[dict]:
     return items[:10]
 
 PRICING_DATA: list[dict] = derive_pricing_from_cms(cms_rows)
+
+# Tools config for homepage pills (MVP: hard-coded)
+TOOLS_CONFIG = [
+    {
+        "name": "Adobe Creative Cloud All Apps",
+        "href": None,  # Will be set dynamically to cheapest country slug
+    },
+]
+
+# Helper function to get unique countries/regions from CMS data
+def get_unique_regions(rows: list[dict]) -> list[dict]:
+    """Extract unique regions with slugs from CMS rows"""
+    seen = set()
+    regions = []
+    for row in rows:
+        region = (row.get("Region") or "").strip()
+        slug = (row.get("Slug") or "").strip()
+        if region and slug and region not in seen:
+            seen.add(region)
+            regions.append({
+                "name": region,
+                "slug": slug,
+            })
+    return sorted(regions, key=lambda x: x["name"])
+
+# Get unique regions for country list
+UNIQUE_REGIONS = get_unique_regions(cms_rows)
 
 # Page factory
 def make_cms_page(row: dict):
@@ -363,7 +391,38 @@ def pricing_table() -> rx.Component:
         width="100%",
     )
 
+def tool_pill(name: str, href: str, **props) -> rx.Component:
+    """Pill-style button for tool selection"""
+    default_props = {
+        "background_color": Colors.PRIMARY,
+        "color": Colors.WHITE,
+        "font_family": Typography.FONT_FAMILY,
+        "font_weight": Typography.WEIGHT_SEMIBOLD,
+        "font_size": Typography.TEXT_LG,
+        "padding": f"{Spacing.MD} {Spacing.XL}",
+        "border_radius": BorderRadius.FULL,
+        "border": "none",
+        "cursor": "pointer",
+        "transition": f"all {Animation.NORMAL} ease-in-out",
+        "_hover": {
+            "background_color": Colors.PRIMARY_HOVER,
+            "transform": "translateY(-1px)",
+        },
+    }
+    default_props.update(props)
+    return rx.link(
+        rx.button(name, **default_props),
+        href=href,
+        text_decoration="none",
+        _hover={"text_decoration": "none"},
+    )
+
 def index() -> rx.Component:
+    # Get cheapest country slug for Adobe Creative Cloud
+    cheapest_slug = None
+    if PRICING_DATA:
+        cheapest_slug = f"/{PRICING_DATA[0]['slug']}"
+    
     return main_layout(
         # Fixed header
         header(),
@@ -371,104 +430,166 @@ def index() -> rx.Component:
         # Main content with top padding for fixed header
         rx.box(
             rx.vstack(
-                # Hero section (full width) - reduced padding by 33%
+                # 1. Hero section
                 hero_section(
                     rx.vstack(
-                        heading_1("Cheapest country for", margin_bottom="0"),
-                        heading_1("Creative Cloud All Apps", margin_bottom=Spacing.LG), 
-                        spacing=Spacing.XS,
+                        heading_1("Find the cheapest country for your software.", margin_bottom=Spacing.LG),
+                        body_text(
+                            "Software companies charge different prices in every region.",
+                            margin_bottom=Spacing.MD,
+                        ),
+                        body_text(
+                            "PriceDuck compares official prices so you can see where your tools are cheapest and buy from that country instead.",
+                        ),
+                        spacing=Spacing.SM,
+                        align="center",
                     ),
-                body_text(
-                            "Creative Cloud All Apps costs less in some places. Find the cheapest price here.",
+                    padding=f"{Spacing.XXXL} 0",
+                ),
+                
+                # 2. Find cheapest country section
+                content_section(
+                    section(
+                        heading_2("Find cheapest country", margin_bottom=Spacing.LG),
+                        body_text(
+                            "Start with a tool below.",
+                            margin_bottom=Spacing.MD,
+                        ),
+                        body_text(
+                            "We'll send you straight to the country where it's currently cheapest, and you can compare against other regions from there.",
+                            margin_bottom=Spacing.XL,
+                        ),
+                        rx.hstack(
+                            *[
+                                tool_pill(
+                                    tool["name"],
+                                    cheapest_slug if cheapest_slug else "#",
+                                )
+                                for tool in TOOLS_CONFIG
+                            ],
+                            spacing=Spacing.MD,
+                            justify="center",
+                            wrap="wrap",
+                        ),
+                        align="center",
+                    ),
+                ),
+                
+                # 3. Why PriceDuck exists section
+                content_section(
+                    section(
+                        heading_2("Why PriceDuck exists", margin_bottom=Spacing.LG),
+                        body_text(
+                            "The same subscription can be much cheaper in another country, even though you get the exact same product.",
+                            margin_bottom=Spacing.MD,
+                        ),
+                        body_text(
+                            "We track official prices for popular tools across regions so you can see how much you're overpaying — and where it makes sense to switch.",
+                        ),
+                        align="center",
+                    ),
+                ),
+                
+                # 4. How it works section
+                content_section(
+                    section(
+                        heading_2("How it works", margin_bottom=Spacing.LG),
+                        rx.ordered_list(
+                            rx.list_item(
+                                body_text(
+                                    "Pick a tool from the list (today: Adobe Creative Cloud All Apps).",
+                                    margin_bottom=Spacing.MD,
+                                ),
+                            ),
+                            rx.list_item(
+                                body_text(
+                                    "We show you the cheapest country for that tool and how it compares to other regions.",
+                                    margin_bottom=Spacing.MD,
+                                ),
+                            ),
+                            rx.list_item(
+                                body_text(
+                                    "You buy from that region using a VPN or local payment method, if it makes sense for you.",
+                                    margin_bottom=Spacing.MD,
+                                ),
+                            ),
+                            padding_left=Spacing.XL,
                             margin_bottom=Spacing.LG,
                         ),
-                    padding=f"{Spacing.XXXL} 0",  # Reduced from XXXXL to XXXL (33% reduction)
+                        body_text(
+                            "We don't sell VPNs or payment workarounds. We just show you where the prices are different.",
+                            margin_bottom=Spacing.NONE,
+                        ),
+                        align="center",
+                    ),
                 ),
-            
-            # Main content
-            rx.box(
+                
+                # 5. What's live right now section
                 content_section(
-                    # Price callout card moved from hero to main content
-                    rx.cond(
-                        State.pricing_data,
-                        callout_card_cheapest(
-                            "CHEAPEST PRICE",
-                            State.cheapest_region_name,
-                            State.cheapest_price_display,
+                    section(
+                        heading_2("What's live right now", margin_bottom=Spacing.LG),
+                        body_text(
+                            "PriceDuck is in early MVP.",
+                            margin_bottom=Spacing.MD,
                         ),
-                        callout_card_cheapest(
-                            "CHEAPEST PRICE",
-                            "Loading...",
-                            "Loading...",
+                        body_text(
+                            "We're starting with a small set of services and countries, and we'll keep expanding coverage over time.",
+                            margin_bottom=Spacing.XL,
                         ),
-                    ),
-                    
-                    # Table callout card
-                    table_callout_card(
-                        rx.center(
-                            section(
-                                heading_2("Top 10 cheapest countries for Creative Cloud All Apps",
-                                          margin_bottom=Spacing.XL),
-                                pricing_table(),
+                        
+                        # Services covered
+                        rx.vstack(
+                            heading_3("Services covered today", margin_bottom=Spacing.SM),
+                            rx.unordered_list(
+                                rx.list_item(
+                                    text_link(
+                                        "Adobe Creative Cloud All Apps",
+                                        href=cheapest_slug if cheapest_slug else "#",
+                                    ),
+                                ),
+                                padding_left=Spacing.LG,
+                                margin_bottom=Spacing.XL,
                             ),
-                            width="100%",
-                        ),
-                    ),
-                    
-                    # Content sections                
-                    section(
-                        heading_2("Creative Cloud Price Around the World"),
-                        
-                        body_text(
-                            "Pricing for Creative Cloud isn't the same everywhere – it's a classic case of regional pricing (also known as price discrimination). Companies often charge different prices in different countries based on factors like local income levels, competition, or market strategy. This means users in lower-income regions often pay much less for the same service than those in wealthier regions.",
-                            margin_bottom=Spacing.MD,
+                            align="center",
+                            margin_bottom=Spacing.XL,
                         ),
                         
-                        body_text(
-                            "For example, popular streaming and software subscriptions show huge price gaps across countries. Netflix's premium plan is about $19.99 per month in the U.S. but under $5 in Turkey! Similarly, Spotify Premium costs around $10.99 in the US, yet users in Turkey pay roughly $2.50 for the same plan. These disparities present a big opportunity: by virtually \"shopping\" from a cheaper country, you could save 50–80% on your Creative Cloud subscription.",
-                            margin_bottom=Spacing.MD,
+                        # Countries and regions
+                        rx.vstack(
+                            heading_3("Countries and regions", margin_bottom=Spacing.SM),
+                            rx.hstack(
+                                *[
+                                    rx.fragment(
+                                        text_link(
+                                            region["name"],
+                                            href=f"/{region['slug']}",
+                                            font_size=Typography.TEXT_BASE,
+                                        ),
+                                        rx.text(" · ", color=Colors.GRAY_600, margin_x=Spacing.XS) if i < len(UNIQUE_REGIONS) - 1 else rx.fragment(),
+                                    )
+                                    for i, region in enumerate(UNIQUE_REGIONS)
+                                ],
+                                wrap="wrap",
+                                justify="center",
+                                align="center",
+                                spacing=Spacing.NONE,
+                                margin_bottom=Spacing.XL,
+                            ),
+                            align="center",
                         ),
-                        
-                        body_text(
-                            "Which countries are cheapest for Creative Cloud? While it varies by product, certain regions consistently offer lower prices. In general, countries like Argentina, Brazil, India, Turkey, and Indonesia tend to have the lowest prices for many digital services. By contrast, wealthier markets (e.g. the USA, Canada, Western Europe, Australia) or smaller high-income countries (like Switzerland or Denmark) often have the highest prices.",
-                            margin_bottom=Spacing.MD,
-                        ),
-                        
-                        body_text(
-                            "Creative Cloud likely follows this trend: you might find its cheapest monthly rate in a country such as Turkey or India, potentially at just a few dollars, whereas the most expensive rates could be in the US or Europe.",
-                        ),
-                    ),
-                    
-                    section(
-                        heading_2("Why Does Creative Cloud Cost More or Less Depending on Country?"),
-                        
-                        body_text(
-                            "You might wonder why such price differences exist. The answer lies in companies' pricing strategies. Many services use regional pricing to make their products affordable in markets with lower incomes. This is a form of price discrimination: for instance, a streaming plan might be set at just a couple of dollars in India (to match local purchasing power) but is over $10 in the US, where consumers are used to higher prices.",
-                            margin_bottom=Spacing.MD,
-                        ),
-                        
-                        body_text(
-                            "Other factors include currency exchange rates, local taxes, and competition. The key point is that the content or service is usually identical – you're just paying a different amount for it based on where the purchase is made. Creative Cloud likely has the same features or library for subscribers globally, but if you subscribe from a low-cost country, you get the same product for less.",
-                            margin_bottom=Spacing.MD,
-                        ),
-                        
-                        body_text(
-                            "Companies accept this trade-off because they'd rather gain customers in emerging markets at lower prices than have none at all. For consumers like us, it means an opportunity to legitimately subscribe at a bargain price by choosing the right country.",
-                        ),
+                        align="center",
                     ),
                 ),
-                flex="1",
+                
+                # Footer
+                footer(),
+                
+                spacing="0",
+                align="stretch",
+                min_height="100vh",
             ),
-            
-            # Footer
-            footer(),
-            
-            spacing="0",
-            align="stretch",
-            min_height="100vh",
+            padding_top="36px",  # Add top padding for fixed header
         ),
-        padding_top="36px",  # Add top padding for fixed header
-    )
     )
 
 def health() -> rx.Component:
