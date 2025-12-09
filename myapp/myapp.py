@@ -1,14 +1,13 @@
 # Welcome to Reflex! This file outlines the steps to create a basic app
 
 import reflex as rx
-from datetime import datetime
 
 from .pages import index
 from .pages import health
 from .pages import not_found
 from .pages import cms_rows, make_cms_page
 
-from .api import root
+from .api import root, sitemap
 
 # Custom style with Bricolage Grotesque font
 custom_style = {
@@ -54,31 +53,6 @@ app = rx.App(
     head_components=google_analytics(),
 )
 
-# Helper function to parse last update date from CMS data
-def get_lastmod_date(row_data):
-    """Try to extract lastmod date from CMS row, default to current date"""
-    # Try various date fields that might exist
-    date_fields = [
-        "Last Page Update",
-        "Last Price Update",
-        "Last Price Update - Human",
-    ]
-    for field in date_fields:
-        date_str = row_data.get(field)
-        if date_str:
-            # Try to parse common date formats
-            try:
-                # Try ISO format first (e.g., "2025-01-15T10:30:00Z")
-                if isinstance(date_str, str) and "T" in date_str:
-                    return datetime.fromisoformat(date_str.replace("Z", "+00:00"))
-                # Try simple date format (e.g., "2025-01-15")
-                if isinstance(date_str, str) and len(date_str) >= 10:
-                    return datetime.strptime(date_str[:10], "%Y-%m-%d")
-            except (ValueError, AttributeError):
-                pass
-    # Default to current date if no valid date found
-    return datetime.now()
-
 # Homepage with SEO optimization
 app.add_page(
     index,
@@ -113,13 +87,7 @@ app.add_page(
         {"name": "theme-color", "content": "#8B5CF6"},
         {"name": "language", "content": "English"},
         # Removed deprecated "revisit-after" meta tag - Google ignores it
-    ],
-    # Sitemap configuration: tell Google pages update weekly
-    sitemap={
-        "changefreq": "weekly",
-        "lastmod": datetime.now(),
-        "priority": 1.0,  # Homepage has highest priority
-    }
+    ]
 )
 
 # Health page (hidden from search engines)
@@ -134,6 +102,12 @@ app.add_page(
 app.api.add_api_route(
     path="/",
     endpoint=root
+)
+
+# Custom sitemap endpoint with weekly changefreq
+app.api.add_api_route(
+    path="/sitemap.xml",
+    endpoint=sitemap
 )
 
 not_found_text = "The page you were looking for could not be found"
@@ -159,13 +133,7 @@ for row in cms_rows:
         page_fn, 
         route=route, 
         title=page_title, 
-        description=page_desc,
-        # Sitemap configuration: tell Google CMS pages update weekly
-        sitemap={
-            "changefreq": "weekly",
-            "lastmod": get_lastmod_date(row),
-            "priority": 0.8,  # Slightly lower than homepage but still high
-        }
+        description=page_desc
     )
 
 app.compile()
