@@ -1,6 +1,7 @@
 # Welcome to Reflex! This file outlines the steps to create a basic app
 
 import reflex as rx
+from datetime import datetime
 
 from .pages import index
 from .pages import health
@@ -53,6 +54,31 @@ app = rx.App(
     head_components=google_analytics(),
 )
 
+# Helper function to parse last update date from CMS data
+def get_lastmod_date(row_data):
+    """Try to extract lastmod date from CMS row, default to current date"""
+    # Try various date fields that might exist
+    date_fields = [
+        "Last Page Update",
+        "Last Price Update",
+        "Last Price Update - Human",
+    ]
+    for field in date_fields:
+        date_str = row_data.get(field)
+        if date_str:
+            # Try to parse common date formats
+            try:
+                # Try ISO format first (e.g., "2025-01-15T10:30:00Z")
+                if isinstance(date_str, str) and "T" in date_str:
+                    return datetime.fromisoformat(date_str.replace("Z", "+00:00"))
+                # Try simple date format (e.g., "2025-01-15")
+                if isinstance(date_str, str) and len(date_str) >= 10:
+                    return datetime.strptime(date_str[:10], "%Y-%m-%d")
+            except (ValueError, AttributeError):
+                pass
+    # Default to current date if no valid date found
+    return datetime.now()
+
 # Homepage with SEO optimization
 app.add_page(
     index,
@@ -86,8 +112,14 @@ app.add_page(
         # Additional SEO
         {"name": "theme-color", "content": "#8B5CF6"},
         {"name": "language", "content": "English"},
-        {"name": "revisit-after", "content": "7 days"},
-    ]
+        # Removed deprecated "revisit-after" meta tag - Google ignores it
+    ],
+    # Sitemap configuration: tell Google pages update weekly
+    sitemap={
+        "changefreq": "weekly",
+        "lastmod": datetime.now(),
+        "priority": 1.0,  # Homepage has highest priority
+    }
 )
 
 # Health page (hidden from search engines)
@@ -122,6 +154,18 @@ for row in cms_rows:
     page_fn = make_cms_page(row)
     page_title = row.get("SEO Meta Title", "Untitled")
     page_desc = row.get("SEO Meta Description", "No description")
-    app.add_page(page_fn, route=route, title=page_title, description=page_desc)
+    
+    app.add_page(
+        page_fn, 
+        route=route, 
+        title=page_title, 
+        description=page_desc,
+        # Sitemap configuration: tell Google CMS pages update weekly
+        sitemap={
+            "changefreq": "weekly",
+            "lastmod": get_lastmod_date(row),
+            "priority": 0.8,  # Slightly lower than homepage but still high
+        }
+    )
 
 app.compile()
