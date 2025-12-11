@@ -57,21 +57,21 @@ app = rx.App(
 app.add_page(
     index,
     route="/",
-    title="Cheapest Country for Creative Cloud All Apps — 2025 | PriceDuck",
-    description="Discover the cheapest countries to buy Creative Cloud All Apps in 2025. Save up to 80% on your Adobe subscription with our comprehensive pricing guide and VPN setup tutorial.",
+    title="Find the cheapest country for your software | PriceDuck",
+    description="Software companies charge different prices in every region. PriceDuck compares official prices so you can see where your tools are cheapest and buy from that country instead.",
     meta=[
         # Google Search Console verification
         {"name": "google-site-verification", "content": "kfPEJH3QDn4PcyoAzP3oUpaNysnWE3Esz3yiBXzZlqo"},
         
         # Basic SEO
-        {"name": "keywords", "content": "creative cloud pricing, adobe subscription discount, cheapest creative cloud, creative cloud vpn, global pricing creative cloud, save money adobe"},
+        {"name": "keywords", "content": "regional pricing, cheapest country software, software price comparison, global software pricing, regional subscription pricing, software discounts by country, compare software prices"},
         {"name": "author", "content": "PriceDuck"},
         {"name": "robots", "content": "index, follow"},
         {"name": "viewport", "content": "width=device-width, initial-scale=1.0"},
         
         # Open Graph (Social Sharing)
-        {"property": "og:title", "content": "Cheapest Country for Creative Cloud All Apps — 2025 | PriceDuck"},
-        {"property": "og:description", "content": "Save up to 80% on Creative Cloud by choosing the right country. Complete pricing guide and VPN setup tutorial included."},
+        {"property": "og:title", "content": "Find the cheapest country for your software | PriceDuck"},
+        {"property": "og:description", "content": "Software companies charge different prices in every region. PriceDuck compares official prices so you can see where your tools are cheapest."},
         {"property": "og:type", "content": "website"},
         {"property": "og:url", "content": "https://www.priceduck.co.za"},
         {"property": "og:image", "content": "https://www.priceduck.co.za/og-image.jpg"},
@@ -79,8 +79,8 @@ app.add_page(
         
         # Twitter Card
         {"name": "twitter:card", "content": "summary_large_image"},
-        {"name": "twitter:title", "content": "Cheapest Country for Creative Cloud All Apps — 2025"},
-        {"name": "twitter:description", "content": "Save up to 80% on Creative Cloud by choosing the right country. Complete pricing guide included."},
+        {"name": "twitter:title", "content": "Find the cheapest country for your software | PriceDuck"},
+        {"name": "twitter:description", "content": "Software companies charge different prices in every region. PriceDuck compares official prices across countries."},
         {"name": "twitter:image", "content": "https://www.priceduck.co.za/og-image.jpg"},
         
         # Additional SEO
