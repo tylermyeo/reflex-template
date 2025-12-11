@@ -95,6 +95,123 @@ def get_unique_regions(rows: list[dict]) -> list[dict]:
 # Get unique regions for country list
 UNIQUE_REGIONS = get_unique_regions(cms_rows)
 
+# FAQ content data structure
+FAQ_ITEMS = [
+    {
+        "question": "Is it legal to buy software using another country's price?",
+        "answer": (
+            "Short answer: it depends on the company's terms, not on PriceDuck.\n"
+            "Most pricing rules live in the vendor's terms of service. Lots of people use regional pricing, "
+            "but it can still break the rules for a specific product. Read the official terms before you decide "
+            "— nothing here is legal advice."
+        ),
+    },
+    {
+        "question": "Can the company tell I'm using a VPN or a different region?",
+        "answer": (
+            "Sometimes, yes.\n"
+            "Companies can look at things like your IP address, billing country, and the country on your account. "
+            "If those don't match, they might ask for extra checks, block the purchase, or cancel a subscription. "
+            "It's annoying, not criminal, but it's a risk you should know about."
+        ),
+    },
+    {
+        "question": "Which payment methods usually work for regional pricing?",
+        "answer": (
+            "The most reliable options are usually local or region-friendly cards.\n"
+            "That can mean a local bank card, a multi-currency card (like Wise, Revolut, etc.), or sometimes PayPal. "
+            "What works changes by product and country. PriceDuck doesn't process payments and can't guarantee any specific method will be accepted."
+        ),
+    },
+    {
+        "question": "What billing country should I use?",
+        "answer": (
+            "In most cases, the billing country should match the store region and/or the card's country.\n"
+            "Putting completely fake details can violate a product's terms of service. Some people still do it, "
+            "but you should assume the company can ask for proof or push back later."
+        ),
+    },
+    {
+        "question": "Can my account get banned for using regional pricing?",
+        "answer": (
+            "Vendors can enforce their rules in different ways.\n"
+            "In practice, the most common outcomes are: failed payments, requests for extra verification, or losing access to the cheaper offer. "
+            "Permanent bans are possible but not typical. If you're worried about that risk, stick to your home region."
+        ),
+    },
+    {
+        "question": "Does PriceDuck sell VPNs or subscriptions?",
+        "answer": (
+            "No. PriceDuck only shows you where prices are different.\n"
+            "We don't run a VPN, we don't resell software, and we don't sit in the middle of your payments. "
+            "Some links might be affiliate links, and if that's the case we'll say so."
+        ),
+    },
+    {
+        "question": "Why are prices so different between countries in the first place?",
+        "answer": (
+            "Companies set prices by region based on things like income levels, local competition, and taxes.\n"
+            "The product is the same, but the \"fair\" price can look very different from one country to another. "
+            "PriceDuck's job is just to make those differences easy to see."
+        ),
+    },
+]
+
+# FAQ section component
+def faq_section() -> rx.Component:
+    """Render the FAQ section with all questions and answers"""
+    return section(
+        heading_2("FAQ", margin_bottom=Spacing.LG),
+        rx.vstack(
+            *[
+                rx.vstack(
+                    heading_3(
+                        item["question"],
+                        margin_bottom=Spacing.SM,
+                        font_weight=Typography.WEIGHT_BOLD,
+                    ),
+                    body_text(
+                        item["answer"],
+                        margin_bottom=Spacing.XL,
+                        white_space="pre-line",  # Preserve line breaks
+                    ),
+                    spacing=Spacing.XS,
+                    align="start",
+                    width="100%",
+                )
+                for item in FAQ_ITEMS
+            ],
+            spacing=Spacing.NONE,
+            align="stretch",
+            width="100%",
+        ),
+    )
+
+# JSON-LD FAQPage schema generator
+def faq_json_ld() -> rx.Component:
+    """Generate JSON-LD FAQPage schema from FAQ_ITEMS"""
+    schema = {
+        "@context": "https://schema.org",
+        "@type": "FAQPage",
+        "mainEntity": [
+            {
+                "@type": "Question",
+                "name": item["question"],
+                "acceptedAnswer": {
+                    "@type": "Answer",
+                    "text": item["answer"],
+                },
+            }
+            for item in FAQ_ITEMS
+        ],
+    }
+    
+    # Use rx.html to render raw HTML script tag with JSON-LD
+    json_str = json.dumps(schema, indent=2, ensure_ascii=False)
+    script_html = f'<script type="application/ld+json">{json_str}</script>'
+    
+    return rx.html(script_html)
+
 # Page factory
 def make_cms_page(row: dict):
     """Return a Reflex page function"""
@@ -135,26 +252,29 @@ def make_cms_page(row: dict):
     )
 
     def page() -> rx.Component:
-        return main_layout(
-        # Header
-        header(),
-        
-        # Page content
-        rx.box(
-            rx.vstack(
-                # Hero section (full width) - reduced padding by 33%
-                hero_section(
+        return rx.fragment(
+            # JSON-LD FAQPage schema
+            faq_json_ld(),
+            main_layout(
+                # Header
+                header(),
+                
+                # Page content
+                rx.box(
                     rx.vstack(
-                        heading_1(title),
-                        body_text(intro), 
-                        spacing=Spacing.XS,
-                    ),
-                    padding=f"{Spacing.XXXL} 0",
-                ),
-            
-            # Main content
-            rx.box(
-                content_section(
+                        # Hero section (full width) - reduced padding by 33%
+                        hero_section(
+                            rx.vstack(
+                                heading_1(title),
+                                body_text(intro), 
+                                spacing=Spacing.XS,
+                            ),
+                            padding=f"{Spacing.XXXL} 0",
+                        ),
+                        
+                        # Main content
+                        rx.box(
+                            content_section(
                     callout_card_latest(
                         "LATEST PRICE",
                         region_name,
@@ -186,144 +306,130 @@ def make_cms_page(row: dict):
                             width="100%",
                         ),
                     ),
-                ),
-                
-                # Content sections
-                section(
-                    heading_2(how_to_heading),
-                    body_text(
-                        f"{product_name} uses regional pricing, which means the same subscription costs {cheapest_region_price_display}/month in {cheapest_region_name}—significantly less than in many other countries. Here's how to access the lower price:",
-                        margin_bottom=Spacing.LG,
-                    ),
-                    heading_3("What You'll Need", margin_bottom=Spacing.SM),
-                    rx.unordered_list(
-                        rx.list_item(
-                            body_text(
-                                f"A VPN service with servers in {cheapest_region_name}",
-                                margin_bottom=Spacing.XS,
-                            )
-                        ),
-                        rx.list_item(
-                            body_text(
-                                "An international Visa or Mastercard (Wise or Revolut also work well)",
-                                margin_bottom=Spacing.XS,
-                            )
-                        ),
-                        rx.list_item(
-                            body_text(
-                                "10–15 minutes to walk through the setup",
-                                margin_bottom=Spacing.XS,
-                            )
-                        ),
-                        padding_left=Spacing.LG,
-                        margin_bottom=Spacing.LG,
-                    ),
-                    heading_3("Step-by-Step Instructions", margin_bottom=Spacing.SM),
-                    body_text(
-                        f"Follow these simple steps to unlock the {cheapest_region_name} rate for {product_name}.",
-                        margin_bottom=Spacing.MD,
-                    ),
-                    rx.ordered_list(
-                        rx.list_item(
-                            rx.vstack(
+                            ),
+                            
+                            # Content sections
+                            section(
+                                heading_2(how_to_heading),
                                 body_text(
-                                    "Get a VPN subscription with reliable servers in the cheapest region.",
-                                    margin_bottom=Spacing.XS,
+                                    f"{product_name} uses regional pricing, which means the same subscription costs {cheapest_region_price_display}/month in {cheapest_region_name}—significantly less than in many other countries. Here's how to access the lower price:",
+                                    margin_bottom=Spacing.LG,
                                 ),
-                                text_link(
-                                    f"Get NordVPN (best VPN for {product_name})",
-                                    href=vpn_affiliate_link,
+                                heading_3("What You'll Need", margin_bottom=Spacing.SM),
+                                rx.unordered_list(
+                                    rx.list_item(
+                                        body_text(
+                                            f"A VPN service with servers in {cheapest_region_name}",
+                                            margin_bottom=Spacing.XS,
+                                        )
+                                    ),
+                                    rx.list_item(
+                                        body_text(
+                                            "An international Visa or Mastercard (Wise or Revolut also work well)",
+                                            margin_bottom=Spacing.XS,
+                                        )
+                                    ),
+                                    rx.list_item(
+                                        body_text(
+                                            "10–15 minutes to walk through the setup",
+                                            margin_bottom=Spacing.XS,
+                                        )
+                                    ),
+                                    padding_left=Spacing.LG,
+                                    margin_bottom=Spacing.LG,
+                                ),
+                                heading_3("Step-by-Step Instructions", margin_bottom=Spacing.SM),
+                                body_text(
+                                    f"Follow these simple steps to unlock the {cheapest_region_name} rate for {product_name}.",
+                                    margin_bottom=Spacing.MD,
+                                ),
+                                rx.ordered_list(
+                                    rx.list_item(
+                                        rx.vstack(
+                                            body_text(
+                                                "Get a VPN subscription with reliable servers in the cheapest region.",
+                                                margin_bottom=Spacing.XS,
+                                            ),
+                                            text_link(
+                                                f"Get NordVPN (best VPN for {product_name})",
+                                                href=vpn_affiliate_link,
+                                            ),
+                                        ),
+                                        margin_bottom=Spacing.MD,
+                                    ),
+                                    rx.list_item(
+                                        body_text(
+                                            f"Open your VPN app and connect to a server located in {cheapest_region_name}. Wait a few seconds until the VPN confirms the connection.",
+                                            margin_bottom=Spacing.MD,
+                                        ),
+                                    ),
+                                    rx.list_item(
+                                        body_text(
+                                            "Clear your browser cookies and cached files for the last 24 hours. Using an incognito or private window works just as well.",
+                                            margin_bottom=Spacing.MD,
+                                        ),
+                                    ),
+                                    rx.list_item(
+                                        body_text(
+                                            f"Visit the {cheapest_region_name} version of the {product_name} website while the VPN stays on. The pricing should now reflect that region.",
+                                            margin_bottom=Spacing.MD,
+                                        ),
+                                    ),
+                                    rx.list_item(
+                                        body_text(
+                                            f"Checkout using an international payment method. Make sure the card allows transactions in {cheapest_region_name}. Wise or Revolut are handy backup options.",
+                                            margin_bottom=Spacing.MD,
+                                        ),
+                                    ),
+                                    rx.list_item(
+                                        body_text(
+                                            f"Once payment succeeds, enjoy {product_name} at the lower {cheapest_region_name} price—VPN only needed for signup unless you want to keep browsing from that region.",
+                                            margin_bottom=Spacing.MD,
+                                        ),
+                                    ),
+                                    padding_left=Spacing.LG,
+                                    margin_bottom=Spacing.LG,
+                                ),
+                                heading_3("Important Considerations", margin_bottom=Spacing.SM),
+                                rx.unordered_list(
+                                    rx.list_item(
+                                        body_text(
+                                            "Terms of Service: Using a VPN to access regional pricing may conflict with the provider's policies. Review the risks before moving ahead.",
+                                            margin_bottom=Spacing.XS,
+                                        )
+                                    ),
+                                    rx.list_item(
+                                        body_text(
+                                            f"Payment continuity: Check that your payment method will keep working for future {product_name} renewals.",
+                                            margin_bottom=Spacing.XS,
+                                        )
+                                    ),
+                                    rx.list_item(
+                                        body_text(
+                                            "VPN cost: Remember to factor the VPN subscription into your overall savings.",
+                                            margin_bottom=Spacing.XS,
+                                        )
+                                    ),
+                                    padding_left=Spacing.LG,
                                 ),
                             ),
-                            margin_bottom=Spacing.MD,
+                            
+                            # FAQ section
+                            faq_section(),
                         ),
-                        rx.list_item(
-                            body_text(
-                                f"Open your VPN app and connect to a server located in {cheapest_region_name}. Wait a few seconds until the VPN confirms the connection.",
-                                margin_bottom=Spacing.MD,
-                            ),
-                        ),
-                        rx.list_item(
-                            body_text(
-                                "Clear your browser cookies and cached files for the last 24 hours. Using an incognito or private window works just as well.",
-                                margin_bottom=Spacing.MD,
-                            ),
-                        ),
-                        rx.list_item(
-                            body_text(
-                                f"Visit the {cheapest_region_name} version of the {product_name} website while the VPN stays on. The pricing should now reflect that region.",
-                                margin_bottom=Spacing.MD,
-                            ),
-                        ),
-                        rx.list_item(
-                            body_text(
-                                f"Checkout using an international payment method. Make sure the card allows transactions in {cheapest_region_name}. Wise or Revolut are handy backup options.",
-                                margin_bottom=Spacing.MD,
-                            ),
-                        ),
-                        rx.list_item(
-                            body_text(
-                                f"Once payment succeeds, enjoy {product_name} at the lower {cheapest_region_name} price—VPN only needed for signup unless you want to keep browsing from that region.",
-                                margin_bottom=Spacing.MD,
-                            ),
-                        ),
-                        padding_left=Spacing.LG,
-                        margin_bottom=Spacing.LG,
+                        flex="1",
                     ),
-                    heading_3("Important Considerations", margin_bottom=Spacing.SM),
-                    rx.unordered_list(
-                        rx.list_item(
-                            body_text(
-                                "Terms of Service: Using a VPN to access regional pricing may conflict with the provider's policies. Review the risks before moving ahead.",
-                                margin_bottom=Spacing.XS,
-                            )
-                        ),
-                        rx.list_item(
-                            body_text(
-                                f"Payment continuity: Check that your payment method will keep working for future {product_name} renewals.",
-                                margin_bottom=Spacing.XS,
-                            )
-                        ),
-                        rx.list_item(
-                            body_text(
-                                "VPN cost: Remember to factor the VPN subscription into your overall savings.",
-                                margin_bottom=Spacing.XS,
-                            )
-                        ),
-                        padding_left=Spacing.LG,
-                    ),
+                    
+                    # Footer
+                    footer(),
+                    
+                    spacing="0",
+                    align="stretch",
+                    min_height="50vh",
                 ),
-                
-                section(
-                    heading_2("Why Does Creative Cloud Cost More or Less Depending on Country?"),
-                    
-                    body_text(
-                        "You might wonder why such price differences exist. The answer lies in companies' pricing strategies. Many services use regional pricing to make their products affordable in markets with lower incomes. This is a form of price discrimination: for instance, a streaming plan might be set at just a couple of dollars in India (to match local purchasing power) but is over $10 in the US, where consumers are used to higher prices.",
-                        margin_bottom=Spacing.MD,
-                    ),
-                    
-                    body_text(
-                        "Other factors include currency exchange rates, local taxes, and competition. The key point is that the content or service is usually identical – you're just paying a different amount for it based on where the purchase is made. Creative Cloud likely has the same features or library for subscribers globally, but if you subscribe from a low-cost country, you get the same product for less.",
-                        margin_bottom=Spacing.MD,
-                    ),
-                    
-                    body_text(
-                        "Companies accept this trade-off because they'd rather gain customers in emerging markets at lower prices than have none at all. For consumers like us, it means an opportunity to legitimately subscribe at a bargain price by choosing the right country.",
-                    ),
-                ),
-                flex="1",
-            ),
-            
-            # Footer
-            footer(),
-            
-            spacing="0",
-            align="stretch",
-            min_height="50vh",
-        ),
-        padding_top="36px",  # Add top padding for header
-    )
-    )
+                padding_top="36px",  # Add top padding for header
+            )
+        )
     return page
 
     
