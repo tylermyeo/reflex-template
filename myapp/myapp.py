@@ -2,10 +2,10 @@
 
 import reflex as rx
 
-from .pages import index
+from .pages_rebuilt import index
 from .pages import health
 from .pages import not_found
-from .pages import cms_rows, make_cms_page
+from .pages import cms_rows, make_cms_page, State
 
 from .api import root, sitemap
 
@@ -28,6 +28,17 @@ custom_style = {
 def google_analytics():
     """Create Google Analytics tracking components"""
     return [
+        # Force left alignment at HTML/body level
+        rx.html("""
+            <style>
+                html, body, #root, [data-radix-scroll-area-viewport] {
+                    text-align: left !important;
+                }
+                h1, h2, h3, h4, h5, h6, p, div {
+                    text-align: left !important;
+                }
+            </style>
+        """),
         # Google Analytics script
         rx.script(src="https://www.googletagmanager.com/gtag/js?id=G-QK7PNNWCBW", async_=True),
         # Google Analytics initialization
@@ -40,11 +51,15 @@ def google_analytics():
     ]
 
 app = rx.App(
+    state=State,
     style={
         "font_family": "'Bricolage Grotesque', sans-serif",
         "font_optical_sizing": "auto", 
         "font_variation_settings": "'wdth' 100",
         "color": "#374151",
+        "*": {
+            "text_align": "left !important",
+        },
     },
     stylesheets=[
         "https://fonts.googleapis.com/css2?family=Bricolage+Grotesque:opsz,wdth,wght@12..96,75..100,200..800&display=swap",
