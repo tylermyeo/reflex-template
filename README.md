@@ -65,6 +65,36 @@ The app state is just a class. State updates are methods in the class. And the U
 
     [Database docs](https://reflex.dev/docs/database/overview/)
 
+## Automated Pricing Scraper
+
+A standalone scraper that discovers CSS selectors with Gemini AI, scrapes pricing from SaaS sites, and pushes data to Notion. Products and selectors are managed in the Notion **Products DB**.
+
+### Setup
+
+1. Install dependencies: `pip install -r requirements.txt`
+2. Set up Notion:
+   - Ensure your integration is connected to both Products DB and Scraped Pricing DB
+   - Get your integration token from [notion.so/my-integrations](https://www.notion.so/my-integrations)
+   - Copy `.env.example` to `.env` and fill in `NOTION_TOKEN`, `NOTION_PRODUCTS_DB_ID`, `NOTION_SCRAPED_PRICING_DB_ID`
+3. Get a Gemini API key from [ai.google.dev](https://ai.google.dev) or [aistudio.google.com/apikey](https://aistudio.google.com/apikey)
+4. For JS-rendered pages: `playwright install chromium`
+
+### Adding a New Product
+
+1. In Notion Products DB, add a row with **Product Name** and **Product URL** (pricing page)
+2. Run selector discovery: `python -m scrapers.selector_discovery`
+3. Run the scraper: `python -m scrapers.main_scraper`
+
+### Manual Run
+
+```bash
+python -m scrapers.main_scraper
+```
+
+Logs are saved to `scrapers/logs/scrape_YYYY-MM-DD_HH-MM-SS.log`
+
+See [scrapers/README.md](scrapers/README.md) for detailed setup and troubleshooting.
+
 ## What makes this work on Railway?
 
 - **Custom build plan:** [nixpacks.toml](https://github.com/brody192/reflex-template/blob/main/nixpacks.toml)

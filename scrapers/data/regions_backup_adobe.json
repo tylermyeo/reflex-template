@@ -1,0 +1,506 @@
+[
+  {
+    "region_code": "KW",
+    "region_name": "Kuwait",
+    "aliases": "kw_en, Kuwait - English, kw_ar, الكويت - اللغة العربية",
+    "page_id": "2fb31012-cf48-8104-b638-cd3369d69477"
+  },
+  {
+    "region_code": "RO",
+    "region_name": "Romania",
+    "aliases": "ro, România",
+    "page_id": "2fb31012-cf48-8109-9a12-d122503ce390"
+  },
+  {
+    "region_code": "BR",
+    "region_name": "Brazil",
+    "aliases": "br, Brasil",
+    "page_id": "2fb31012-cf48-810d-b82f-c585ca2a4123"
+  },
+  {
+    "region_code": "PE",
+    "region_name": "Peru",
+    "aliases": "pe, Perú",
+    "page_id": "2fb31012-cf48-8110-a112-cd2538077a4f"
+  },
+  {
+    "region_code": "CN",
+    "region_name": "China",
+    "aliases": "cn, 中国",
+    "page_id": "2fb31012-cf48-8112-a328-c36b79e3630b"
+  },
+  {
+    "region_code": "AE",
+    "region_name": "United Arab Emirates",
+    "aliases": "ae_en, United Arab Emirates - English, ae_ar, الإمارات العربية المتحدة",
+    "page_id": "2fb31012-cf48-8113-b9d3-c19a2b4616fb"
+  },
+  {
+    "region_code": "TZ",
+    "region_name": "Tanzania",
+    "aliases": "",
+    "page_id": "2fb31012-cf48-8116-ad2e-e688fee692dd"
+  },
+  {
+    "region_code": "RU",
+    "region_name": "Russia",
+    "aliases": "ru, Россия",
+    "page_id": "2fb31012-cf48-8118-af23-ed3f6f1ef01b"
+  },
+  {
+    "region_code": "CO",
+    "region_name": "Colombia",
+    "aliases": "co, Colombia",
+    "page_id": "2fb31012-cf48-8120-a6af-e4a13b334495"
+  },
+  {
+    "region_code": "LT",
+    "region_name": "Lithuania",
+    "aliases": "lt, Lietuva",
+    "page_id": "2fb31012-cf48-8123-a5e3-f49075e7500a"
+  },
+  {
+    "region_code": "JP",
+    "region_name": "Japan",
+    "aliases": "jp, 日本",
+    "page_id": "2fb31012-cf48-8124-869e-c7f18ea45c01"
+  },
+  {
+    "region_code": "SG",
+    "region_name": "Singapore",
+    "aliases": "sg, Singapore",
+    "page_id": "2fb31012-cf48-8125-9d47-d2ab242f2cb7"
+  },
+  {
+    "region_code": "CA",
+    "region_name": "Canada",
+    "aliases": "ca, Canada - English, ca_fr, Canada - Français",
+    "page_id": "2fb31012-cf48-8125-a5f9-eec5433f96d7"
+  },
+  {
+    "region_code": "OM",
+    "region_name": "Oman",
+    "aliases": "",
+    "page_id": "2fb31012-cf48-8125-b0c7-e47cbc87b77f"
+  },
+  {
+    "region_code": "TH",
+    "region_name": "Thailand",
+    "aliases": "th_th, ประเทศไทย, th_en, Thailand - English",
+    "page_id": "2fb31012-cf48-8126-a8ae-cbadce21d955"
+  },
+  {
+    "region_code": "PT",
+    "region_name": "Portugal",
+    "aliases": "pt, Portugal",
+    "page_id": "2fb31012-cf48-812c-bdcc-d0456ef92f12"
+  },
+  {
+    "region_code": "MA",
+    "region_name": "Morocco",
+    "aliases": "",
+    "page_id": "2fb31012-cf48-812d-a36d-cfae1db138a3"
+  },
+  {
+    "region_code": "IN",
+    "region_name": "India",
+    "aliases": "in, India - English, in_hi, भारत",
+    "page_id": "2fb31012-cf48-8130-9cb4-ec45d7f71e2c"
+  },
+  {
+    "region_code": "US",
+    "region_name": "United States",
+    "aliases": "us, United States",
+    "page_id": "2fb31012-cf48-8131-b40a-d2d5fe5b5fe1"
+  },
+  {
+    "region_code": "FI",
+    "region_name": "Finland",
+    "aliases": "fi, Suomi",
+    "page_id": "2fb31012-cf48-8132-acac-eab909974e6f"
+  },
+  {
+    "region_code": "IL",
+    "region_name": "Israel",
+    "aliases": "il_he, ישראל - עברית, il_en, Israel - English",
+    "page_id": "2fb31012-cf48-8134-8c7c-cb843cb99329"
+  },
+  {
+    "region_code": "AM",
+    "region_name": "Armenia",
+    "aliases": "",
+    "page_id": "2fb31012-cf48-8135-87a7-cd165cf29e7a"
+  },
+  {
+    "region_code": "ZA",
+    "region_name": "South Africa",
+    "aliases": "za, South Africa",
+    "page_id": "2fb31012-cf48-8135-9244-d9d77c926b08"
+  },
+  {
+    "region_code": "NO",
+    "region_name": "Norway",
+    "aliases": "no, Norge",
+    "page_id": "2fb31012-cf48-8135-aaa5-e68692dc8382"
+  },
+  {
+    "region_code": "ID",
+    "region_name": "Indonesia",
+    "aliases": "id_id, Indonesia, id_en, Indonesia - English",
+    "page_id": "2fb31012-cf48-8135-adf6-d213b7b834d8"
+  },
+  {
+    "region_code": "IT",
+    "region_name": "Italy",
+    "aliases": "it, Italia",
+    "page_id": "2fb31012-cf48-8136-b1a4-eeffd2d4f62b"
+  },
+  {
+    "region_code": "CL",
+    "region_name": "Chile",
+    "aliases": "cl, Chile",
+    "page_id": "2fb31012-cf48-8138-92a1-d012df70a46c"
+  },
+  {
+    "region_code": "BH",
+    "region_name": "Bahrain",
+    "aliases": "",
+    "page_id": "2fb31012-cf48-813b-8883-dc68ef0637c6"
+  },
+  {
+    "region_code": "PK",
+    "region_name": "Pakistan",
+    "aliases": "",
+    "page_id": "2fb31012-cf48-813c-a0ee-ff571e54457d"
+  },
+  {
+    "region_code": "HK",
+    "region_name": "Hong Kong",
+    "aliases": "hk_zh, 中國香港特別行政區, hk_en, Hong Kong SAR of China",
+    "page_id": "2fb31012-cf48-8144-b7ac-f6b1a1e076ab"
+  },
+  {
+    "region_code": "HR",
+    "region_name": "Croatia",
+    "aliases": "",
+    "page_id": "2fb31012-cf48-8148-b7f4-da06acc64941"
+  },
+  {
+    "region_code": "CR",
+    "region_name": "Costa Rica",
+    "aliases": "cr, Costa Rica",
+    "page_id": "2fb31012-cf48-814b-82eb-cbc16753b7f8"
+  },
+  {
+    "region_code": "KZ",
+    "region_name": "Kazakhstan",
+    "aliases": "",
+    "page_id": "2fb31012-cf48-814c-9177-c4680eee0228"
+  },
+  {
+    "region_code": "LK",
+    "region_name": "Sri Lanka",
+    "aliases": "",
+    "page_id": "2fb31012-cf48-814c-9b0d-f5802f9a387b"
+  },
+  {
+    "region_code": "SA",
+    "region_name": "Saudi Arabia",
+    "aliases": "sa_en, Saudi Arabia - English, sa_ar, المملكة العربية السعودية",
+    "page_id": "2fb31012-cf48-8151-9142-fbe1f0d2bd49"
+  },
+  {
+    "region_code": "KR",
+    "region_name": "South Korea",
+    "aliases": "kr, 한국",
+    "page_id": "2fb31012-cf48-8155-823f-f5728323ee26"
+  },
+  {
+    "region_code": "PH",
+    "region_name": "Philippines",
+    "aliases": "ph_en, Philippines - English, ph_fil, Pilipinas",
+    "page_id": "2fb31012-cf48-8157-ae79-ed4ee6a64f15"
+  },
+  {
+    "region_code": "NP",
+    "region_name": "Nepal",
+    "aliases": "",
+    "page_id": "2fb31012-cf48-815c-93fa-fb89724ca21f"
+  },
+  {
+    "region_code": "NG",
+    "region_name": "Nigeria",
+    "aliases": "ng, Nigeria",
+    "page_id": "2fb31012-cf48-815e-8867-e8bcf17db703"
+  },
+  {
+    "region_code": "ES",
+    "region_name": "Spain",
+    "aliases": "es, España",
+    "page_id": "2fb31012-cf48-8162-889c-fc8ec87534de"
+  },
+  {
+    "region_code": "SI",
+    "region_name": "Slovenia",
+    "aliases": "si, Slovenija",
+    "page_id": "2fb31012-cf48-8166-9f38-d61762115bb1"
+  },
+  {
+    "region_code": "AT",
+    "region_name": "Austria",
+    "aliases": "at, Österreich",
+    "page_id": "2fb31012-cf48-8167-845f-ef35667b894f"
+  },
+  {
+    "region_code": "TR",
+    "region_name": "Turkey",
+    "aliases": "tr, Türkiye",
+    "page_id": "2fb31012-cf48-8167-8be0-e5e683cbd87e"
+  },
+  {
+    "region_code": "BD",
+    "region_name": "Bangladesh",
+    "aliases": "",
+    "page_id": "2fb31012-cf48-8167-bd23-f9641dabfef7"
+  },
+  {
+    "region_code": "MM",
+    "region_name": "Myanmar",
+    "aliases": "",
+    "page_id": "2fb31012-cf48-816d-8c2c-f89a7b6ef517"
+  },
+  {
+    "region_code": "JO",
+    "region_name": "Jordan",
+    "aliases": "",
+    "page_id": "2fb31012-cf48-8171-8811-f76fbfd5e9c9"
+  },
+  {
+    "region_code": "HU",
+    "region_name": "Hungary",
+    "aliases": "hu, Magyarország",
+    "page_id": "2fb31012-cf48-8176-b295-eec28d0077bb"
+  },
+  {
+    "region_code": "CZ",
+    "region_name": "Czech Republic",
+    "aliases": "cz, Česká republika",
+    "page_id": "2fb31012-cf48-8177-aad7-edf68a664899"
+  },
+  {
+    "region_code": "GE",
+    "region_name": "Georgia",
+    "aliases": "",
+    "page_id": "2fb31012-cf48-8177-b838-dfe006998500"
+  },
+  {
+    "region_code": "FR",
+    "region_name": "France",
+    "aliases": "fr, France",
+    "page_id": "2fb31012-cf48-8179-9c9e-e206be8208a4"
+  },
+  {
+    "region_code": "TW",
+    "region_name": "Taiwan",
+    "aliases": "tw, 台灣地區",
+    "page_id": "2fb31012-cf48-817b-887b-ed429049af41"
+  },
+  {
+    "region_code": "AZ",
+    "region_name": "Azerbaijan",
+    "aliases": "",
+    "page_id": "2fb31012-cf48-817c-b739-df1f5af8c3da"
+  },
+  {
+    "region_code": "EG",
+    "region_name": "Egypt",
+    "aliases": "eg_ar, مصر - اللغة العربية, eg_en, Egypt - English",
+    "page_id": "2fb31012-cf48-8182-b923-c992b6516a92"
+  },
+  {
+    "region_code": "EE",
+    "region_name": "Estonia",
+    "aliases": "ee, Eesti",
+    "page_id": "2fb31012-cf48-8188-b84e-ffec63d24b37"
+  },
+  {
+    "region_code": "GB",
+    "region_name": "United Kingdom",
+    "aliases": "uk, United Kingdom",
+    "page_id": "2fb31012-cf48-818d-9e2f-eb7e03a46fda"
+  },
+  {
+    "region_code": "UG",
+    "region_name": "Uganda",
+    "aliases": "",
+    "page_id": "2fb31012-cf48-8197-a083-e8b938ce42e5"
+  },
+  {
+    "region_code": "AU",
+    "region_name": "Australia",
+    "aliases": "au, Australia",
+    "page_id": "2fb31012-cf48-8197-b187-c1efc1f64547"
+  },
+  {
+    "region_code": "NZ",
+    "region_name": "New Zealand",
+    "aliases": "nz, New Zealand",
+    "page_id": "2fb31012-cf48-819a-921b-e0bd347ff02b"
+  },
+  {
+    "region_code": "RS",
+    "region_name": "Serbia",
+    "aliases": "",
+    "page_id": "2fb31012-cf48-819b-8291-cbdc3985f69d"
+  },
+  {
+    "region_code": "SK",
+    "region_name": "Slovakia",
+    "aliases": "sk, Slovensko",
+    "page_id": "2fb31012-cf48-81a2-8323-c790d1529204"
+  },
+  {
+    "region_code": "EC",
+    "region_name": "Ecuador",
+    "aliases": "ec, Ecuador",
+    "page_id": "2fb31012-cf48-81a6-951e-f9b322220c8a"
+  },
+  {
+    "region_code": "UZ",
+    "region_name": "Uzbekistan",
+    "aliases": "",
+    "page_id": "2fb31012-cf48-81a7-ae54-c1df19d97aca"
+  },
+  {
+    "region_code": "LB",
+    "region_name": "Lebanon",
+    "aliases": "",
+    "page_id": "2fb31012-cf48-81b1-9eb5-cb3ca4d96821"
+  },
+  {
+    "region_code": "KE",
+    "region_name": "Kenya",
+    "aliases": "",
+    "page_id": "2fb31012-cf48-81b2-9b83-f4265b7792d3"
+  },
+  {
+    "region_code": "GH",
+    "region_name": "Ghana",
+    "aliases": "",
+    "page_id": "2fb31012-cf48-81b4-92c1-e72a2c5f3491"
+  },
+  {
+    "region_code": "PL",
+    "region_name": "Poland",
+    "aliases": "pl, Polska",
+    "page_id": "2fb31012-cf48-81b5-b0e3-fb584dd4b4f7"
+  },
+  {
+    "region_code": "BE",
+    "region_name": "Belgium",
+    "aliases": "be_en, Belgium - English, be_nl, België - Nederlands, be_fr, Belgique - Français",
+    "page_id": "2fb31012-cf48-81bd-8953-f6de5e83d13f"
+  },
+  {
+    "region_code": "UA",
+    "region_name": "Ukraine",
+    "aliases": "ua, Україна",
+    "page_id": "2fb31012-cf48-81c1-9693-eb67c0d8cca3"
+  },
+  {
+    "region_code": "SE",
+    "region_name": "Sweden",
+    "aliases": "se, Sverige",
+    "page_id": "2fb31012-cf48-81c3-8855-ef2e992e2d54"
+  },
+  {
+    "region_code": "CH",
+    "region_name": "Switzerland",
+    "aliases": "ch_de, Schweiz, ch_it, Svizzera, ch_fr, Suisse",
+    "page_id": "2fb31012-cf48-81c3-bdf3-d2680ec440a4"
+  },
+  {
+    "region_code": "DK",
+    "region_name": "Denmark",
+    "aliases": "dk, Danmark",
+    "page_id": "2fb31012-cf48-81c7-8f4e-fae90cff2542"
+  },
+  {
+    "region_code": "MX",
+    "region_name": "Mexico",
+    "aliases": "mx, México",
+    "page_id": "2fb31012-cf48-81d2-92d3-ed467fb97418"
+  },
+  {
+    "region_code": "GT",
+    "region_name": "Guatemala",
+    "aliases": "gt, Guatemala",
+    "page_id": "2fb31012-cf48-81d3-bd1e-e9de311e0bfc"
+  },
+  {
+    "region_code": "MY",
+    "region_name": "Malaysia",
+    "aliases": "my_ms, Malaysia, my_en, Malaysia - English",
+    "page_id": "2fb31012-cf48-81d5-8318-d22421154cdc"
+  },
+  {
+    "region_code": "DE",
+    "region_name": "Germany",
+    "aliases": "de, Deutschland",
+    "page_id": "2fb31012-cf48-81d7-8c8f-c5aebcc691af"
+  },
+  {
+    "region_code": "IE",
+    "region_name": "Ireland",
+    "aliases": "ie, Ireland",
+    "page_id": "2fb31012-cf48-81d7-b958-d227b4eee42f"
+  },
+  {
+    "region_code": "AR",
+    "region_name": "Argentina",
+    "aliases": "ar, Argentina",
+    "page_id": "2fb31012-cf48-81dc-bc30-d401badf8a3d"
+  },
+  {
+    "region_code": "ET",
+    "region_name": "Ethiopia",
+    "aliases": "",
+    "page_id": "2fb31012-cf48-81eb-9d4f-e7ba9f7b253d"
+  },
+  {
+    "region_code": "LV",
+    "region_name": "Latvia",
+    "aliases": "lv, Latvija",
+    "page_id": "2fb31012-cf48-81ed-9d9e-f16dd14b6487"
+  },
+  {
+    "region_code": "QA",
+    "region_name": "Qatar",
+    "aliases": "qa_ar, قطر - اللغة العربية, qa_en, Qatar - English",
+    "page_id": "2fb31012-cf48-81ee-8c81-e744b63eeaea"
+  },
+  {
+    "region_code": "BG",
+    "region_name": "Bulgaria",
+    "aliases": "bg, България",
+    "page_id": "2fb31012-cf48-81ef-9756-f6ca61f6c536"
+  },
+  {
+    "region_code": "GR",
+    "region_name": "Greece",
+    "aliases": "gr_el, Ελλάδα, gr_en, Greece - English",
+    "page_id": "2fb31012-cf48-81ef-9e3b-c0a9cb3f0068"
+  },
+  {
+    "region_code": "VN",
+    "region_name": "Vietnam",
+    "aliases": "vn_en, Vietnam - English, vn_vi, Việt Nam",
+    "page_id": "2fb31012-cf48-81fa-bdb9-caf08033fb72"
+  },
+  {
+    "region_code": "NL",
+    "region_name": "Netherlands",
+    "aliases": "nl, Nederland",
+    "page_id": "2fb31012-cf48-81fb-b865-f7975d6d9d7c"
+  }
+]
