@@ -29,8 +29,8 @@
 	# serve files from '.web/_static'
 	file_server
 
-	# allows for pretty paths
-	try_files {path} {path}.html
+	# allows for pretty paths (index.html for directory roots, .html for named pages)
+	try_files {path} {path}/index.html {path}.html
 
 	# the handle_path directive will strip /backend/ from the path before proxying
 	handle_path /backend/* {

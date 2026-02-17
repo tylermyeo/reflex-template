@@ -48,7 +48,7 @@ def index() -> rx.Component:
         rx.box(
             rx.box(
                 rx.heading(
-                    "Find cheapest country",
+                    "See cheapest price",
                     as_="h2",
                     margin_bottom=SPACING_LG,
                     **HEADING_LG_STYLE,
