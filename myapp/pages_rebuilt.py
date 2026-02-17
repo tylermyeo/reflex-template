@@ -1,5 +1,5 @@
 import reflex as rx
-from .pages import FAQ_ITEMS, TOOLS_CONFIG, PRICING_DATA, UNIQUE_REGIONS, tool_pill
+from .pages import FAQ_ITEMS, TOOLS_CONFIG, UNIQUE_REGIONS
 from .design_constants import (
     HEADING_XL_STYLE, HEADING_LG_STYLE, HEADING_MD_STYLE, BODY_TEXT_STYLE, BUTTON_STYLE,
     COLOR_TEXT_PRIMARY, COLOR_TEXT_SECONDARY, COLOR_TEXT_MUTED, COLOR_BORDER, COLOR_BACKGROUND_ALT,
@@ -9,10 +9,6 @@ from .components import site_header, site_footer
 
 def index() -> rx.Component:
     """Polished minimal homepage - brutalist typography with proper spacing"""
-    
-    cheapest_slug = ""
-    if PRICING_DATA:
-        cheapest_slug = PRICING_DATA[0].get("slug", "")
     
     return rx.fragment(
         # Header
@@ -68,14 +64,15 @@ def index() -> rx.Component:
                     **BODY_TEXT_STYLE,
                 ),
                 rx.box(
-                    rx.link(
-                        rx.box(
-                            "Adobe Creative Cloud All Apps",
-                            **BUTTON_STYLE,
-                        ),
-                        href=cheapest_slug if cheapest_slug else "#",
-                        text_decoration="none",
-                    ),
+                    *[
+                        rx.link(
+                            rx.box(tool["name"], **BUTTON_STYLE),
+                            href=tool["href"],
+                            text_decoration="none",
+                            margin_bottom="0.75rem",
+                        )
+                        for tool in TOOLS_CONFIG
+                    ],
                 ),
                 max_width=MAX_WIDTH,
                 margin="0 auto",
@@ -122,7 +119,7 @@ def index() -> rx.Component:
                 rx.ordered_list(
                     rx.list_item(
                         rx.text(
-                            "Pick a tool from the list (today: Adobe Creative Cloud All Apps).",
+                            f"Pick a tool from the list (today: {', '.join(t['name'] for t in TOOLS_CONFIG)}).",
                             **BODY_TEXT_STYLE,
                         ),
                         margin_bottom="1rem",
@@ -185,15 +182,18 @@ def index() -> rx.Component:
                     **HEADING_MD_STYLE,
                 ),
                 rx.unordered_list(
-                    rx.list_item(
-                        rx.link(
-                            rx.text("Adobe Creative Cloud All Apps"),
-                            href=cheapest_slug if cheapest_slug else "#",
-                            color=COLOR_BLACK,
-                            text_decoration="underline",
-                            _hover={"color": COLOR_TEXT_SECONDARY},
-                        ),
-                    ),
+                    *[
+                        rx.list_item(
+                            rx.link(
+                                rx.text(tool["name"]),
+                                href=tool["href"],
+                                color=COLOR_BLACK,
+                                text_decoration="underline",
+                                _hover={"color": COLOR_TEXT_SECONDARY},
+                            ),
+                        )
+                        for tool in TOOLS_CONFIG
+                    ],
                     padding_left="1.5rem",
                     margin_bottom="3rem",
                     font_size=FONT_SIZE_BASE,

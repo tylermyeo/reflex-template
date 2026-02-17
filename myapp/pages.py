@@ -65,13 +65,16 @@ PRICING_DATA_BY_PRODUCT: dict[str, list[dict]] = {
     for product in PRODUCTS
 }
 
-# Tools config for homepage pills (MVP: hard-coded)
-TOOLS_CONFIG = [
-    {
-        "name": "Adobe Creative Cloud All Apps",
-        "href": None,  # Will be set dynamically to cheapest country slug
-    },
-]
+# Tools config for homepage pills (derived from CMS products)
+TOOLS_CONFIG = []
+for product in sorted(PRODUCTS):
+    product_pricing = PRICING_DATA_BY_PRODUCT.get(product, [])
+    if product_pricing:
+        cheapest_slug = product_pricing[0].get("slug", "")
+        TOOLS_CONFIG.append({
+            "name": product,
+            "href": f"/{cheapest_slug}" if cheapest_slug else "#",
+        })
 
 # Helper function to get unique countries/regions from CMS data
 def get_unique_regions(rows: list[dict]) -> list[dict]:
