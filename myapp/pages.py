@@ -26,9 +26,11 @@ def load_cms_pages():
 cms_rows: list[dict] = load_cms_pages()
 
 # Derive pricing table data directly from CMS rows (exported by n8n)
-def derive_pricing_from_cms(rows: list[dict]) -> list[dict]:
+def derive_pricing_from_cms(rows: list[dict], product_filter: str | None = None) -> list[dict]:
     items: list[dict] = []
     for row in rows:
+        if product_filter and (row.get("Product") or "").strip() != product_filter:
+            continue
         region = (row.get("Region") or "").strip()
         amount = row.get("Latest Price ($)")
         period = (row.get("Period") or "/mo").strip()
@@ -55,6 +57,13 @@ def derive_pricing_from_cms(rows: list[dict]) -> list[dict]:
     return items[:10]
 
 PRICING_DATA: list[dict] = derive_pricing_from_cms(cms_rows)
+
+# Per-product pricing data for product pages
+PRODUCTS = {(row.get("Product") or "").strip() for row in cms_rows if row.get("Product")}
+PRICING_DATA_BY_PRODUCT: dict[str, list[dict]] = {
+    product: derive_pricing_from_cms(cms_rows, product_filter=product)
+    for product in PRODUCTS
+}
 
 # Tools config for homepage pills (MVP: hard-coded)
 TOOLS_CONFIG = [
@@ -230,7 +239,8 @@ def make_cms_page(row: dict):
     # Shared variables for page content (used across sections)
     product_name = ((row.get("Product") or title) or "This product").strip()
 
-    cheapest_entry = PRICING_DATA[0] if PRICING_DATA else None
+    product_pricing = PRICING_DATA_BY_PRODUCT.get(product_name, PRICING_DATA)
+    cheapest_entry = product_pricing[0] if product_pricing else None
     if cheapest_entry:
         cheapest_region_name = cheapest_entry["region_name"]
         cheapest_region_price_display = f"${cheapest_entry['amount']:.2f}"
@@ -280,7 +290,7 @@ def make_cms_page(row: dict):
                                             rx.heading(latest_price_display, as_="h1", margin_bottom="0.5rem", **HEADING_LG_STYLE),
                                             rx.text("per month", font_size="0.875rem", color=COLOR_TEXT_SECONDARY),
                                             rx.text(f"Last updated {last_price_update}", font_size="0.875rem", color=COLOR_TEXT_MUTED, margin_top="0.5rem"),
-                                            spacing="0.25rem",
+                                            spacing="1",
                                             align="start",
                                             width="100%",
                     ),
@@ -293,8 +303,8 @@ def make_cms_page(row: dict):
                                     rx.box(
                                         rx.vstack(
                                             rx.text("Cheapest Price", font_size="0.875rem", font_weight="700", color=COLOR_TEXT_SECONDARY, margin_bottom="0.5rem"),
-                                            rx.heading(State.cheapest_region_name, as_="h2", margin_bottom="0.5rem", **HEADING_MD_STYLE),
-                                            rx.heading(State.cheapest_price_display, as_="h1", margin_bottom="0.5rem", **HEADING_LG_STYLE),
+                                            rx.heading(cheapest_region_name, as_="h2", margin_bottom="0.5rem", **HEADING_MD_STYLE),
+                                            rx.heading(cheapest_region_price_display, as_="h1", margin_bottom="0.5rem", **HEADING_LG_STYLE),
                                             rx.text("per month", font_size="0.875rem", color=COLOR_TEXT_SECONDARY, margin_bottom="1rem"),
                                             rx.link(
                                                 rx.box(
@@ -305,7 +315,7 @@ def make_cms_page(row: dict):
                                                 is_external=True,
                                                 text_decoration="none",
                                             ),
-                                            spacing="0.25rem",
+                                            spacing="1",
                                             align="start",
                                             width="100%",
                                         ),
@@ -317,8 +327,8 @@ def make_cms_page(row: dict):
                     # Table callout card
                                     rx.box(
                                         rx.vstack(
-                                            rx.heading("Top 10 cheapest countries for Creative Cloud All Apps", as_="h2", margin_bottom="2rem", **HEADING_LG_STYLE),
-                                            pricing_table(),
+                                            rx.heading(f"Top 10 cheapest countries for {product_name}", as_="h2", margin_bottom="2rem", **HEADING_LG_STYLE),
+                                            pricing_table(product_pricing),
                                             align="start",
                                             width="100%",
                                         ),
@@ -326,7 +336,7 @@ def make_cms_page(row: dict):
                                         padding="2rem",
                                         width="100%",
                                     ),
-                        spacing="3rem",
+                        spacing="7",
                         align="start",
                     ),
                     max_width=MAX_WIDTH,
@@ -457,71 +467,39 @@ def make_cms_page(row: dict):
     
 
 class State(rx.State):
-    # Pricing data derived from CMS export
-    pricing_data: list[dict] = PRICING_DATA
-    
     @rx.var
     def current_year(self) -> str:
         """Get the current year"""
         import datetime
         return str(datetime.datetime.now().year)
-    
-    @rx.var
-    def cheapest_price_display(self) -> str:
-        """Get the cheapest price formatted without /mo"""
-        if not self.pricing_data:
-            return "Loading..."
-        return f"${self.pricing_data[0]['amount']:.2f}"
 
-    @rx.var
-    def cheapest_region_name(self) -> str:
-        """Get the region name associated with the cheapest price"""
-        if not self.pricing_data:
-            return "Loading..."
-        return self.pricing_data[0]["region_name"]
-
-    @rx.var
-    def cheapest_region_heading(self) -> str:
-        """Build the heading text using the cheapest region"""
-        region = self.cheapest_region_name
-        if region == "Loading...":
-            return "How to access the lowest Creative Cloud pricing"
-        return f"How to access {region} pricing"
-
-def pricing_table() -> rx.Component:
-    """Clean pricing table without callout card"""
+def pricing_table(data: list[dict]) -> rx.Component:
+    """Clean pricing table for a specific product"""
     from .design_constants import BODY_TEXT_STYLE, COLOR_BLACK, COLOR_TEXT_SECONDARY
+    rows = []
+    for i, item in enumerate(data):
+        rows.append(
+            rx.table.row(
+                rx.table.cell(
+                    rx.text(str(i + 1), text_align="center", **BODY_TEXT_STYLE),
+                ),
+                rx.table.cell(
+                    rx.link(
+                        rx.text(item["region_name"], **BODY_TEXT_STYLE),
+                        href=f"/{item['slug']}",
+                        color=COLOR_BLACK,
+                        text_decoration="underline",
+                        _hover={"color": COLOR_TEXT_SECONDARY},
+                    ),
+                ),
+                rx.table.cell(
+                    rx.text(item["price_display"], text_align="right", **BODY_TEXT_STYLE),
+                ),
+            )
+        )
     return rx.box(
-        rx.table_container(
-            rx.table(
-            rx.tbody(
-                rx.foreach(
-                    State.pricing_data,
-                    lambda item, index: rx.tr(
-                            rx.td(
-                            rx.text(index + 1, text_align="center", **BODY_TEXT_STYLE),
-                            text_align="center",
-                            padding="0.75rem",
-                        ),
-                            rx.td(
-                                rx.link(
-                                    rx.text(item["region_name"], **BODY_TEXT_STYLE),
-                                href=f"/{item['slug']}",
-                                    color=COLOR_BLACK,
-                                    text_decoration="underline",
-                                    _hover={"color": COLOR_TEXT_SECONDARY},
-                            ),
-                                padding="0.75rem",
-                        ),
-                            rx.td(
-                            rx.text(item["price_display"], text_align="right", **BODY_TEXT_STYLE),
-                            text_align="right",
-                                padding="0.75rem",
-                        ),
-                    )
-                )
-            ),
-        ),
+        rx.table.root(
+            rx.table.body(*rows),
         ),
         width="100%",
     )
@@ -573,25 +551,25 @@ def index() -> rx.Component:
                         rx.link("Home", href="/", color="#115735", font_size="0.875rem", _hover={"text_decoration": "underline"}),
                         rx.link("About", href="/about", color="#115735", font_size="0.875rem", _hover={"text_decoration": "underline"}),
                         rx.link("Contact", href="mailto:tylermyeo@gmail.com", color="#115735", font_size="0.875rem", _hover={"text_decoration": "underline"}),
-                        spacing="2rem",
+                        spacing="5",
                         justify="center",
                         wrap="wrap",
                     ),
                     rx.hstack(
                         rx.link("Privacy Policy", href="/privacy", color="#115735", font_size="0.875rem", _hover={"text_decoration": "underline"}),
                         rx.link("Terms of Service", href="/terms", color="#115735", font_size="0.875rem", _hover={"text_decoration": "underline"}),
-                        spacing="2rem",
+                        spacing="5",
                         justify="center",
                         wrap="wrap",
                         margin_top="0.5rem",
                     ),
                     align="center",
-                    spacing="0.5rem",
+                    spacing="2",
                     margin_bottom="3rem",
                 ),
                 rx.divider(margin_y="1.5rem"),
                 rx.text("© 2025 PriceDuck. All rights reserved.", font_size="0.875rem", color="#6B7280", text_align="center"),
-                spacing="1.5rem",
+                spacing="4",
                 align="center",
                 width="100%",
             ),
@@ -621,7 +599,7 @@ def index() -> rx.Component:
                             rx.text(
                             "PriceDuck compares official prices so you can see where your tools are cheapest and buy from that country instead.",
                         ),
-                            spacing="0.5rem",
+                            spacing="2",
                         align="start",
                         width="100%",
                     ),
@@ -655,7 +633,7 @@ def index() -> rx.Component:
                                 )
                                 for tool in TOOLS_CONFIG
                             ],
-                                    spacing="1rem",
+                                    spacing="3",
                             justify="center",
                             wrap="wrap",
                         ),
@@ -663,7 +641,7 @@ def index() -> rx.Component:
                         width="100%",
                     ),
                         ),
-                        spacing="2rem",
+                        spacing="5",
                         padding_y="4rem",
                     ),
                     max_width="1200px",
@@ -689,7 +667,7 @@ def index() -> rx.Component:
                         width="100%",
                     ),
                         ),
-                        spacing="2rem",
+                        spacing="5",
                         padding_y="4rem",
                     ),
                     max_width="1200px",
@@ -734,7 +712,7 @@ def index() -> rx.Component:
                         width="100%",
                     ),
                         ),
-                        spacing="2rem",
+                        spacing="5",
                         padding_y="4rem",
                     ),
                     max_width="1200px",
@@ -802,7 +780,7 @@ def index() -> rx.Component:
                         width="100%",
                     ),
                 ),
-                        spacing="2rem",
+                        spacing="5",
                         padding_y="4rem",
                     ),
                     max_width="1200px",
@@ -827,7 +805,7 @@ def health() -> rx.Component:
         rx.box(
             rx.vstack(
                 rx.text("healthy"),
-                spacing="2rem",
+                spacing="5",
                 padding_y="4rem",
             ),
             max_width="1200px",
@@ -845,7 +823,7 @@ def not_found(page_text) -> rx.Component:
         rx.box(
             rx.vstack(
                 rx.heading(page_text, as_="h1"),
-                spacing="2rem",
+                spacing="5",
                 padding_y="4rem",
             ),
             max_width="1200px",

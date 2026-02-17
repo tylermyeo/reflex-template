@@ -1,5 +1,6 @@
 # Welcome to Reflex! This file outlines the steps to create a basic app
 
+import re
 import reflex as rx
 
 from .pages_rebuilt import index
@@ -51,7 +52,6 @@ def google_analytics():
     ]
 
 app = rx.App(
-    state=State,
     style={
         "font_family": "'Bricolage Grotesque', sans-serif",
         "font_optical_sizing": "auto", 
@@ -114,41 +114,49 @@ app.add_page(
     meta=[{"name": "robots", "content": "noindex, nofollow"}]
 )
 
-app.api.add_api_route(
-    path="/",
-    endpoint=root
+app._api.add_route(
+    "/",
+    root,
+    methods=["GET"],
 )
 
 # Custom sitemap endpoint with weekly changefreq
-app.api.add_api_route(
-    path="/sitemap.xml",
-    endpoint=sitemap
+app._api.add_route(
+    "/sitemap.xml",
+    sitemap,
+    methods=["GET"],
 )
 
 not_found_text = "The page you were looking for could not be found"
 
-app.add_custom_404_page(
-    title="404 - Page Not Found", 
+app.add_page(
+    not_found(not_found_text),
+    route="404",
+    title="404 - Page Not Found",
     description=not_found_text,
-    component=not_found(not_found_text)
 )
 
 
 # Dynamically add a page for each CMS row (no filters yet)
+_seen_routes = set()
 for row in cms_rows:
     slug = (row.get("Slug") or "").strip()
     if not slug:
         continue
+    # Strip characters not allowed by Reflex routes (only alpha, hyphens, underscores)
+    slug = re.sub(r'[^a-zA-Z0-9/_-]', '', slug)
     route = "/" + slug.lstrip("/")
+    if route in _seen_routes:
+        continue
+    _seen_routes.add(route)
     page_fn = make_cms_page(row)
     page_title = row.get("SEO Meta Title", "Untitled")
     page_desc = row.get("SEO Meta Description", "No description")
-    
+
     app.add_page(
-        page_fn, 
-        route=route, 
-        title=page_title, 
+        page_fn,
+        route=route,
+        title=page_title,
         description=page_desc
     )
 
-app.compile()

@@ -1,10 +1,11 @@
 import reflex as rx
 from datetime import datetime
-from fastapi import Response
+from starlette.requests import Request
+from starlette.responses import Response, JSONResponse
 from .pages import cms_rows
 
-def root():
-    return {"message": "hello from reflex"}
+def root(request: Request):
+    return JSONResponse({"message": "hello from reflex"})
 
 def get_lastmod_date(row_data):
     """Try to extract lastmod date from CMS row, default to current date"""
@@ -25,7 +26,7 @@ def get_lastmod_date(row_data):
                 pass
     return datetime.now()
 
-def sitemap():
+def sitemap(request: Request):
     """Generate sitemap.xml with weekly changefreq and lastmod dates"""
     base_url = "https://www.priceduck.co.za"
     now = datetime.now().strftime("%Y-%m-%d")
