@@ -38,6 +38,7 @@ app = rx.App(
     ],
     # Add Google Analytics to the head of every page
     head_components=google_analytics(),
+    overlay_component=None,
 )
 
 # Homepage with SEO optimization
