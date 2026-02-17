@@ -20,13 +20,13 @@
 		format json # set access log format to json mode
 	}
 
-	# serve from the '.web/_static' folder (reflex exports into the '.web/_static' folder)
-	root * .web/_static
+	# serve from the '.web/build/client' folder (reflex 0.8.x exports here)
+	root * .web/build/client
 
 	# enable gzipping responses
 	encode gzip
 
-	# serve files from '.web/_static'
+	# serve files from '.web/build/client'
 	file_server
 
 	# allows for pretty paths (index.html for directory roots, .html for named pages)
