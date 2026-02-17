@@ -22,8 +22,22 @@ def load_cms_pages():
         print(f"Error loading cms_pages.json: {e}")
         return []
 
+def deduplicate_cms_rows(rows: list[dict]) -> list[dict]:
+    """Keep only the most recent row per (Product, Region) pair,
+    based on the 'Last Price Update' ISO timestamp."""
+    best: dict[tuple, dict] = {}
+    for row in rows:
+        key = (
+            (row.get("Product") or "").strip(),
+            (row.get("Region") or "").strip(),
+        )
+        existing = best.get(key)
+        if existing is None or (row.get("Last Price Update") or "") > (existing.get("Last Price Update") or ""):
+            best[key] = row
+    return list(best.values())
+
 # Make rows available to myapp.py for routing
-cms_rows: list[dict] = load_cms_pages()
+cms_rows: list[dict] = deduplicate_cms_rows(load_cms_pages())
 
 # Derive pricing table data directly from CMS rows (exported by n8n)
 def derive_pricing_from_cms(rows: list[dict], product_filter: str | None = None) -> list[dict]:
@@ -162,18 +176,19 @@ def faq_section() -> rx.Component:
     """Return an FAQ section matching homepage pattern"""
     from .design_constants import (
         HEADING_LG_STYLE, HEADING_MD_STYLE, BODY_TEXT_STYLE,
-        COLOR_TEXT_SECONDARY, COLOR_BACKGROUND_ALT, MAX_WIDTH, PADDING_SECTION
+        COLOR_TEXT_SECONDARY, COLOR_BORDER, COLOR_BACKGROUND_ALT,
+        MAX_WIDTH, PADDING_SECTION, SPACING_SM, SPACING_XL, SPACING_2XL,
     )
-    
+
     return rx.box(
         rx.box(
-            rx.heading("FAQ", as_="h2", margin_bottom="3rem", **HEADING_LG_STYLE),
+            rx.heading("FAQ", as_="h2", margin_bottom=SPACING_2XL, **HEADING_LG_STYLE),
             *[
                 rx.box(
                     rx.heading(
                         item["question"],
                         as_="h3",
-                        margin_bottom="0.75rem",
+                        margin_bottom=SPACING_SM,
                         **HEADING_MD_STYLE,
                     ),
                     rx.text(
@@ -182,9 +197,11 @@ def faq_section() -> rx.Component:
                         white_space="pre-line",
                         **BODY_TEXT_STYLE,
                     ),
-                    margin_bottom="3rem",
+                    border_top=f"1px solid {COLOR_BORDER}" if i > 0 else "none",
+                    padding_top=SPACING_XL if i > 0 else "0",
+                    margin_bottom=SPACING_XL,
                 )
-                for item in FAQ_ITEMS
+                for i, item in enumerate(FAQ_ITEMS)
             ],
             max_width=MAX_WIDTH,
             margin="0 auto",
@@ -260,208 +277,207 @@ def make_cms_page(row: dict):
 
     def page() -> rx.Component:
         from .design_constants import (
-            MAX_WIDTH, COLOR_BORDER, LETTER_SPACING_NORMAL, COLOR_TEXT_MUTED,
-            HEADING_XL_STYLE, HEADING_LG_STYLE, HEADING_MD_STYLE, BODY_TEXT_STYLE, BUTTON_STYLE,
-            COLOR_TEXT_PRIMARY, COLOR_TEXT_SECONDARY, COLOR_BACKGROUND_ALT, PADDING_SECTION, COLOR_BLACK
+            MAX_WIDTH, COLOR_TEXT_MUTED,
+            HEADING_LG_STYLE, HEADING_MD_STYLE, BODY_TEXT_STYLE,
+            BUTTON_STYLE, LINK_STYLE, STEP_NUMBER_STYLE, CALLOUT_BOX_STYLE,
+            COLOR_TEXT_PRIMARY, COLOR_TEXT_SECONDARY, COLOR_BACKGROUND_ALT, COLOR_BLACK,
+            PADDING_SECTION, FONT_SIZE_SM, FONT_SIZE_BASE,
+            SPACING_XS, SPACING_SM, SPACING_MD, SPACING_LG, SPACING_XL, SPACING_2XL,
         )
         from .components import site_header, site_footer
-        
+
         return rx.fragment(
             # JSON-LD FAQPage schema
             faq_json_ld(),
-            
+
             # Header
             site_header(),
-            
+
             # Hero section
             rx.box(
-                rx.heading(title, as_="h1", margin_bottom="1rem", **HEADING_LG_STYLE),
+                rx.heading(title, as_="h1", margin_bottom=SPACING_MD, **HEADING_LG_STYLE),
                 rx.text(intro, **BODY_TEXT_STYLE, color=COLOR_TEXT_SECONDARY),
                 max_width=MAX_WIDTH,
                 margin="0 auto",
                 padding=PADDING_SECTION,
             ),
-                
-                # Main content
-                rx.box(
-                    rx.vstack(
-                                    # Latest price callout
-                                    rx.box(
-                                        rx.vstack(
-                                            rx.text("Latest Price", font_size="0.875rem", font_weight="700", color=COLOR_TEXT_SECONDARY, margin_bottom="0.5rem"),
-                                            rx.heading(region_name, as_="h2", margin_bottom="0.5rem", **HEADING_MD_STYLE),
-                                            rx.heading(latest_price_display, as_="h1", margin_bottom="0.5rem", **HEADING_LG_STYLE),
-                                            rx.text("per month", font_size="0.875rem", color=COLOR_TEXT_SECONDARY),
-                                            rx.text(f"Last updated {last_price_update}", font_size="0.875rem", color=COLOR_TEXT_MUTED, margin_top="0.5rem"),
-                                            spacing="1",
-                                            align="start",
-                                            width="100%",
+
+            # Main content - price callouts and table
+            rx.box(
+                rx.vstack(
+                    # Latest price callout
+                    rx.box(
+                        rx.vstack(
+                            rx.text("Latest Price", font_size=FONT_SIZE_SM, font_weight="700", color=COLOR_TEXT_SECONDARY, margin_bottom=SPACING_XS),
+                            rx.heading(region_name, as_="h2", margin_bottom=SPACING_XS, **HEADING_MD_STYLE),
+                            rx.heading(latest_price_display, as_="h1", margin_bottom=SPACING_XS, **HEADING_LG_STYLE),
+                            rx.text("per month", font_size=FONT_SIZE_SM, color=COLOR_TEXT_SECONDARY),
+                            rx.text(f"Last updated {last_price_update}", font_size=FONT_SIZE_SM, color=COLOR_TEXT_MUTED, margin_top=SPACING_XS),
+                            spacing="1",
+                            align="start",
+                            width="100%",
+                        ),
+                        **CALLOUT_BOX_STYLE,
                     ),
-                                        background=COLOR_BACKGROUND_ALT,
-                                        padding="2rem",
-                                        width="100%",
-                                    ),
-                                    
-                                    # Cheapest price callout
-                                    rx.box(
-                                        rx.vstack(
-                                            rx.text("Cheapest Price", font_size="0.875rem", font_weight="700", color=COLOR_TEXT_SECONDARY, margin_bottom="0.5rem"),
-                                            rx.heading(cheapest_region_name, as_="h2", margin_bottom="0.5rem", **HEADING_MD_STYLE),
-                                            rx.heading(cheapest_region_price_display, as_="h1", margin_bottom="0.5rem", **HEADING_LG_STYLE),
-                                            rx.text("per month", font_size="0.875rem", color=COLOR_TEXT_SECONDARY, margin_bottom="1rem"),
-                                            rx.link(
-                                                rx.box(
-                                                    "Unlock This Price with NordVPN",
-                                                    **BUTTON_STYLE,
-                                                ),
-                                                href="https://go.nordvpn.net/aff_c?offer_id=15&aff_id=120959&url_id=902",
-                                                is_external=True,
-                                                text_decoration="none",
-                                            ),
-                                            spacing="1",
-                                            align="start",
-                                            width="100%",
-                                        ),
-                                        background=COLOR_BACKGROUND_ALT,
-                                        padding="2rem",
-                                        width="100%",
-                                    ),
-                    
+
+                    # Cheapest price callout
+                    rx.box(
+                        rx.vstack(
+                            rx.text("Cheapest Price", font_size=FONT_SIZE_SM, font_weight="700", color=COLOR_TEXT_SECONDARY, margin_bottom=SPACING_XS),
+                            rx.heading(cheapest_region_name, as_="h2", margin_bottom=SPACING_XS, **HEADING_MD_STYLE),
+                            rx.heading(cheapest_region_price_display, as_="h1", margin_bottom=SPACING_XS, **HEADING_LG_STYLE),
+                            rx.text("per month", font_size=FONT_SIZE_SM, color=COLOR_TEXT_SECONDARY, margin_bottom=SPACING_MD),
+                            rx.link(
+                                rx.box(
+                                    "Unlock This Price with NordVPN",
+                                    **BUTTON_STYLE,
+                                ),
+                                href="https://go.nordvpn.net/aff_c?offer_id=15&aff_id=120959&url_id=902",
+                                is_external=True,
+                                text_decoration="none",
+                            ),
+                            spacing="1",
+                            align="start",
+                            width="100%",
+                        ),
+                        **CALLOUT_BOX_STYLE,
+                    ),
+
                     # Table callout card
-                                    rx.box(
-                                        rx.vstack(
-                                            rx.heading(f"Top 10 cheapest countries for {product_name}", as_="h2", margin_bottom="2rem", **HEADING_LG_STYLE),
-                                            pricing_table(product_pricing),
-                                            align="start",
-                                            width="100%",
-                                        ),
-                                        background=COLOR_BACKGROUND_ALT,
-                                        padding="2rem",
-                                        width="100%",
-                                    ),
-                        spacing="7",
-                        align="start",
+                    rx.box(
+                        rx.vstack(
+                            rx.heading(f"Top 10 cheapest countries for {product_name}", as_="h2", margin_bottom=SPACING_XL, **HEADING_LG_STYLE),
+                            pricing_table(product_pricing),
+                            align="start",
+                            width="100%",
+                        ),
+                        **CALLOUT_BOX_STYLE,
                     ),
+                    spacing="7",
+                    align="start",
+                ),
+                max_width=MAX_WIDTH,
+                margin="0 auto",
+                padding=PADDING_SECTION,
+            ),
+
+            # How to Access section
+            rx.box(
+                rx.box(
+                    # Main heading (H2, not XL — subordinate to page H1)
+                    rx.heading(
+                        how_to_heading,
+                        as_="h2",
+                        margin_bottom=SPACING_LG,
+                        **HEADING_LG_STYLE,
+                    ),
+
+                    # Intro paragraph
+                    rx.text(
+                        f"{product_name} uses regional pricing, which means the same subscription costs {cheapest_region_price_display}/month in {cheapest_region_name}\u2014significantly less than in many other countries. Here\u2019s how to access the lower price:",
+                        font_size=FONT_SIZE_BASE,
+                        line_height="1.7",
+                        color=COLOR_TEXT_SECONDARY,
+                        margin_bottom=SPACING_2XL,
+                    ),
+
+                    # What You'll Need
+                    rx.heading("What You'll Need", as_="h3", margin_bottom=SPACING_LG, **HEADING_MD_STYLE),
+                    rx.box(
+                        rx.text(f"\u2022 VPN service with servers in {cheapest_region_name}", **BODY_TEXT_STYLE, margin_bottom=SPACING_SM),
+                        rx.text("\u2022 International Visa or Mastercard (Wise or Revolut also work well)", **BODY_TEXT_STYLE, margin_bottom=SPACING_SM),
+                        rx.text("\u2022 10\u201315 minutes to walk through the setup", **BODY_TEXT_STYLE),
+                        margin_bottom=SPACING_2XL,
+                    ),
+
+                    # Step-by-Step Instructions
+                    rx.heading("Step-by-Step Instructions", as_="h3", margin_bottom=SPACING_LG, **HEADING_MD_STYLE),
+                    rx.box(
+                        # Step 1
+                        rx.box(
+                            rx.text("1.", **STEP_NUMBER_STYLE),
+                            rx.text("Get a VPN subscription with reliable servers in the cheapest region.", **BODY_TEXT_STYLE, margin_bottom=SPACING_XS),
+                            rx.link(
+                                f"\u2192 Get NordVPN (best VPN for {product_name})",
+                                href=vpn_affiliate_link,
+                                **LINK_STYLE,
+                                **BODY_TEXT_STYLE,
+                            ),
+                            margin_bottom=SPACING_XL,
+                        ),
+
+                        # Step 2
+                        rx.box(
+                            rx.text("2.", **STEP_NUMBER_STYLE),
+                            rx.text(
+                                f"Open your VPN app and connect to a server located in {cheapest_region_name}. Wait a few seconds until the VPN confirms the connection.",
+                                **BODY_TEXT_STYLE,
+                            ),
+                            margin_bottom=SPACING_XL,
+                        ),
+
+                        # Step 3
+                        rx.box(
+                            rx.text("3.", **STEP_NUMBER_STYLE),
+                            rx.text(
+                                "Clear your browser cookies and cached files for the last 24 hours. Using an incognito or private window works just as well.",
+                                **BODY_TEXT_STYLE,
+                            ),
+                            margin_bottom=SPACING_XL,
+                        ),
+
+                        # Step 4
+                        rx.box(
+                            rx.text("4.", **STEP_NUMBER_STYLE),
+                            rx.text(
+                                f"Visit the {cheapest_region_name} version of the {product_name} website while the VPN stays on. The pricing should now reflect that region.",
+                                **BODY_TEXT_STYLE,
+                            ),
+                            margin_bottom=SPACING_XL,
+                        ),
+
+                        # Step 5
+                        rx.box(
+                            rx.text("5.", **STEP_NUMBER_STYLE),
+                            rx.text(
+                                f"Checkout using an international payment method. Make sure the card allows transactions in {cheapest_region_name}. Wise or Revolut are handy backup options.",
+                                **BODY_TEXT_STYLE,
+                            ),
+                            margin_bottom=SPACING_XL,
+                        ),
+
+                        # Step 6
+                        rx.box(
+                            rx.text("6.", **STEP_NUMBER_STYLE),
+                            rx.text(
+                                f"Once payment succeeds, enjoy {product_name} at the lower {cheapest_region_name} price\u2014VPN only needed for signup unless you want to keep browsing from that region.",
+                                **BODY_TEXT_STYLE,
+                            ),
+                        ),
+                        margin_bottom=SPACING_2XL,
+                    ),
+
+                    # Important Notes — left-border accent for visual distinction
+                    rx.heading("Important Notes", as_="h3", margin_bottom=SPACING_LG, **HEADING_MD_STYLE),
+                    rx.box(
+                        rx.text("\u2022 Terms of Service: Using a VPN to access regional pricing may conflict with the provider\u2019s policies. Review the risks before moving ahead.", **BODY_TEXT_STYLE, margin_bottom=SPACING_SM),
+                        rx.text(f"\u2022 Payment continuity: Check that your payment method will keep working for future {product_name} renewals.", **BODY_TEXT_STYLE, margin_bottom=SPACING_SM),
+                        rx.text("\u2022 VPN cost: Remember to factor the VPN subscription into your overall savings.", **BODY_TEXT_STYLE),
+                        border_left=f"3px solid {COLOR_BLACK}",
+                        padding_left=SPACING_LG,
+                        padding_y=SPACING_MD,
+                        background=COLOR_BACKGROUND_ALT,
+                    ),
+
                     max_width=MAX_WIDTH,
                     margin="0 auto",
                     padding=PADDING_SECTION,
                 ),
-                
-                # How to Access section - redesigned for scannability
-                rx.box(
-                    rx.box(
-                        # Main heading
-                        rx.heading(
-                            how_to_heading,
-                            as_="h2",
-                            margin_bottom="1.5rem",
-                            **HEADING_XL_STYLE,
-                        ),
-                        
-                        # Intro paragraph - larger font
-                        rx.text(
-                            f"{product_name} uses regional pricing, which means the same subscription costs {cheapest_region_price_display}/month in {cheapest_region_name}—significantly less than in many other countries. Here's how to access the lower price:",
-                            font_size="1.25rem",
-                            line_height="1.6",
-                            color=COLOR_TEXT_SECONDARY,
-                            margin_bottom="3rem",
-                        ),
-                        
-                        # What You'll Need
-                        rx.heading("What You'll Need", as_="h2", margin_bottom="1.5rem", **HEADING_LG_STYLE),
-                        rx.box(
-                            rx.text(f"• VPN service with servers in {cheapest_region_name}", **BODY_TEXT_STYLE, margin_bottom="0.75rem"),
-                            rx.text("• International Visa or Mastercard (Wise or Revolut also work well)", **BODY_TEXT_STYLE, margin_bottom="0.75rem"),
-                            rx.text("• 10–15 minutes to walk through the setup", **BODY_TEXT_STYLE),
-                            margin_bottom="3rem",
-                        ),
-                        
-                        # Step-by-Step Instructions
-                        rx.heading("Step-by-Step Instructions", as_="h2", margin_bottom="1.5rem", **HEADING_LG_STYLE),
-                        rx.box(
-                            # Step 1
-                            rx.box(
-                                rx.text("1.", font_weight="800", font_size="1.5rem", color=COLOR_TEXT_PRIMARY, margin_bottom="0.5rem"),
-                                rx.text("Get a VPN subscription with reliable servers in the cheapest region.", **BODY_TEXT_STYLE, margin_bottom="0.5rem"),
-                                rx.link(
-                                    f"→ Get NordVPN (best VPN for {product_name})",
-                                    href=vpn_affiliate_link,
-                                    color=COLOR_BLACK,
-                                    text_decoration="underline",
-                                    _hover={"color": COLOR_TEXT_SECONDARY},
-                                    **BODY_TEXT_STYLE,
-                                ),
-                                margin_bottom="2rem",
-                            ),
-                            
-                            # Step 2
-                            rx.box(
-                                rx.text("2.", font_weight="800", font_size="1.5rem", color=COLOR_TEXT_PRIMARY, margin_bottom="0.5rem"),
-                                rx.text(
-                                    f"Open your VPN app and connect to a server located in {cheapest_region_name}. Wait a few seconds until the VPN confirms the connection.",
-                                    **BODY_TEXT_STYLE,
-                                ),
-                                margin_bottom="2rem",
-                            ),
-                            
-                            # Step 3
-                            rx.box(
-                                rx.text("3.", font_weight="800", font_size="1.5rem", color=COLOR_TEXT_PRIMARY, margin_bottom="0.5rem"),
-                                rx.text(
-                                    "Clear your browser cookies and cached files for the last 24 hours. Using an incognito or private window works just as well.",
-                                    **BODY_TEXT_STYLE,
-                                ),
-                                margin_bottom="2rem",
-                            ),
-                            
-                            # Step 4
-                            rx.box(
-                                rx.text("4.", font_weight="800", font_size="1.5rem", color=COLOR_TEXT_PRIMARY, margin_bottom="0.5rem"),
-                                rx.text(
-                                    f"Visit the {cheapest_region_name} version of the {product_name} website while the VPN stays on. The pricing should now reflect that region.",
-                                    **BODY_TEXT_STYLE,
-                                ),
-                                margin_bottom="2rem",
-                            ),
-                            
-                            # Step 5
-                            rx.box(
-                                rx.text("5.", font_weight="800", font_size="1.5rem", color=COLOR_TEXT_PRIMARY, margin_bottom="0.5rem"),
-                                rx.text(
-                                    f"Checkout using an international payment method. Make sure the card allows transactions in {cheapest_region_name}. Wise or Revolut are handy backup options.",
-                                    **BODY_TEXT_STYLE,
-                                ),
-                                margin_bottom="2rem",
-                            ),
-                            
-                            # Step 6
-                            rx.box(
-                                rx.text("6.", font_weight="800", font_size="1.5rem", color=COLOR_TEXT_PRIMARY, margin_bottom="0.5rem"),
-                                rx.text(
-                                    f"Once payment succeeds, enjoy {product_name} at the lower {cheapest_region_name} price—VPN only needed for signup unless you want to keep browsing from that region.",
-                                    **BODY_TEXT_STYLE,
-                                ),
-                            ),
-                            margin_bottom="3rem",
-                        ),
-                        
-                        # Important Notes
-                        rx.heading("Important Notes", as_="h2", margin_bottom="1.5rem", **HEADING_LG_STYLE),
-                        rx.box(
-                            rx.text("• Terms of Service: Using a VPN to access regional pricing may conflict with the provider's policies. Review the risks before moving ahead.", **BODY_TEXT_STYLE, margin_bottom="0.75rem"),
-                            rx.text(f"• Payment continuity: Check that your payment method will keep working for future {product_name} renewals.", **BODY_TEXT_STYLE, margin_bottom="0.75rem"),
-                            rx.text("• VPN cost: Remember to factor the VPN subscription into your overall savings.", **BODY_TEXT_STYLE),
-                        ),
-                        
-                        max_width=MAX_WIDTH,
-                        margin="0 auto",
-                        padding=PADDING_SECTION,
-                    ),
-                ),
-                
+            ),
+
             # FAQ section
             faq_section(),
-            
+
             # Footer
             site_footer(),
         )
@@ -478,7 +494,7 @@ class State(rx.State):
 
 def pricing_table(data: list[dict]) -> rx.Component:
     """Clean pricing table for a specific product"""
-    from .design_constants import BODY_TEXT_STYLE, COLOR_BLACK, COLOR_TEXT_SECONDARY
+    from .design_constants import BODY_TEXT_STYLE, LINK_STYLE, COLOR_BORDER
     rows = []
     for i, item in enumerate(data):
         rows.append(
@@ -490,9 +506,7 @@ def pricing_table(data: list[dict]) -> rx.Component:
                     rx.link(
                         rx.text(item["region_name"], **BODY_TEXT_STYLE),
                         href=f"/{item['slug']}",
-                        color=COLOR_BLACK,
-                        text_decoration="underline",
-                        _hover={"color": COLOR_TEXT_SECONDARY},
+                        **LINK_STYLE,
                     ),
                 ),
                 rx.table.cell(
@@ -505,302 +519,7 @@ def pricing_table(data: list[dict]) -> rx.Component:
             rx.table.body(*rows),
         ),
         width="100%",
-    )
-
-def tool_pill(name: str, href: str, **props) -> rx.Component:
-    """Pill-style button for tool selection"""
-    from .design_constants import BUTTON_STYLE
-    return rx.link(
-        rx.box(name, **BUTTON_STYLE, **props),
-        href=href,
-        text_decoration="none",
-    )
-
-def index() -> rx.Component:
-    # Get cheapest country slug for Adobe Creative Cloud
-    cheapest_slug = None
-    if PRICING_DATA:
-        cheapest_slug = f"/{PRICING_DATA[0]['slug']}"
-    
-    # Simple header
-    header_component = rx.box(
-        rx.box(
-            rx.center(
-                rx.link(
-                    rx.heading("PriceDuck", font_size="1.5rem", font_weight="800"),
-                    href="/",
-                    text_decoration="none",
-                    _hover={"text_decoration": "none"},
-                ),
-                width="100%",
-                padding_y="1rem",
-            ),
-            max_width="1200px",
-            margin="0 auto",
-            padding_x="1.5rem",
-            width="100%",
-        ),
-        position="static",
-    )
-    
-    # Simple footer
-    footer_component = rx.box(
-        rx.box(
-            rx.vstack(
-                rx.heading("PriceDuck", font_size="1.5rem", font_weight="700", margin_bottom="1.5rem"),
-                rx.vstack(
-                    rx.heading("Quick Links", font_size="0.875rem", font_weight="600", margin_bottom="0.5rem", text_transform="uppercase"),
-                    rx.hstack(
-                        rx.link("Home", href="/", color="#115735", font_size="0.875rem", _hover={"text_decoration": "underline"}),
-                        rx.link("About", href="/about", color="#115735", font_size="0.875rem", _hover={"text_decoration": "underline"}),
-                        rx.link("Contact", href="mailto:tylermyeo@gmail.com", color="#115735", font_size="0.875rem", _hover={"text_decoration": "underline"}),
-                        spacing="5",
-                        justify="center",
-                        wrap="wrap",
-                    ),
-                    rx.hstack(
-                        rx.link("Privacy Policy", href="/privacy", color="#115735", font_size="0.875rem", _hover={"text_decoration": "underline"}),
-                        rx.link("Terms of Service", href="/terms", color="#115735", font_size="0.875rem", _hover={"text_decoration": "underline"}),
-                        spacing="5",
-                        justify="center",
-                        wrap="wrap",
-                        margin_top="0.5rem",
-                    ),
-                    align="center",
-                    spacing="2",
-                    margin_bottom="3rem",
-                ),
-                rx.divider(margin_y="1.5rem"),
-                rx.text("© 2025 PriceDuck. All rights reserved.", font_size="0.875rem", color="#6B7280", text_align="center"),
-                spacing="4",
-                align="center",
-                width="100%",
-            ),
-            max_width="1200px",
-            margin="0 auto",
-            padding_x="1.5rem",
-            width="100%",
-        ),
-        margin_top="6rem",
-        padding="4rem 0 2rem 0",
-        width="100%",
-    )
-    
-    return rx.box(
-        header_component,
-        rx.box(
-            rx.vstack(
-                # 1. Hero section
-                rx.box(
-                    rx.box(
-                    rx.vstack(
-                            rx.heading("Find the cheapest country for your software.", as_="h1", margin_bottom="1.5rem"),
-                            rx.text(
-                            "Software companies charge different prices in every region.",
-                                margin_bottom="1rem",
-                        ),
-                            rx.text(
-                            "PriceDuck compares official prices so you can see where your tools are cheapest and buy from that country instead.",
-                        ),
-                            spacing="2",
-                        align="start",
-                        width="100%",
-                    ),
-                        max_width="1200px",
-                        margin="0 auto",
-                        padding_x="1.5rem",
-                        width="100%",
-                    ),
-                    padding="4rem 0",
-                ),
-                
-                # 2. Find cheapest country section
-                rx.box(
-                    rx.vstack(
-                        rx.box(
-                            rx.vstack(
-                                rx.heading("Find cheapest country", as_="h2", margin_bottom="1.5rem"),
-                                rx.text(
-                            "Start with a tool below.",
-                                    margin_bottom="1rem",
-                        ),
-                                rx.text(
-                            "We'll send you straight to the country where it's currently cheapest, and you can compare against other regions from there.",
-                                    margin_bottom="2rem",
-                        ),
-                        rx.hstack(
-                            *[
-                                tool_pill(
-                                    tool["name"],
-                                    cheapest_slug if cheapest_slug else "#",
-                                )
-                                for tool in TOOLS_CONFIG
-                            ],
-                                    spacing="3",
-                            justify="center",
-                            wrap="wrap",
-                        ),
-                        align="start",
-                        width="100%",
-                    ),
-                        ),
-                        spacing="5",
-                        padding_y="4rem",
-                    ),
-                    max_width="1200px",
-                    margin="0 auto",
-                    padding_x="1.5rem",
-                    width="100%",
-                ),
-                
-                # 3. Why PriceDuck exists section
-                rx.box(
-                    rx.vstack(
-                        rx.box(
-                            rx.vstack(
-                                rx.heading("Why PriceDuck exists", as_="h2", margin_bottom="1.5rem"),
-                                rx.text(
-                            "The same subscription can be much cheaper in another country, even though you get the exact same product.",
-                                    margin_bottom="1rem",
-                        ),
-                                rx.text(
-                            "We track official prices for popular tools across regions so you can see how much you're overpaying — and where it makes sense to switch.",
-                        ),
-                        align="start",
-                        width="100%",
-                    ),
-                        ),
-                        spacing="5",
-                        padding_y="4rem",
-                    ),
-                    max_width="1200px",
-                    margin="0 auto",
-                    padding_x="1.5rem",
-                    width="100%",
-                ),
-                
-                # 4. How it works section
-                rx.box(
-                    rx.vstack(
-                        rx.box(
-                            rx.vstack(
-                                rx.heading("How it works", as_="h2", margin_bottom="1.5rem"),
-                        rx.ordered_list(
-                            rx.list_item(
-                                        rx.text(
-                                    "Pick a tool from the list (today: Adobe Creative Cloud All Apps).",
-                                            margin_bottom="1rem",
-                                ),
-                            ),
-                            rx.list_item(
-                                        rx.text(
-                                    "We show you the cheapest country for that tool and how it compares to other regions.",
-                                            margin_bottom="1rem",
-                                ),
-                            ),
-                            rx.list_item(
-                                        rx.text(
-                                    "You buy from that region using a VPN or local payment method, if it makes sense for you.",
-                                            margin_bottom="1rem",
-                                ),
-                            ),
-                                    padding_left="2rem",
-                                    margin_bottom="1.5rem",
-                        ),
-                                rx.text(
-                            "We don't sell VPNs or payment workarounds. We just show you where the prices are different.",
-                                    margin_bottom="0",
-                        ),
-                        align="start",
-                        width="100%",
-                    ),
-                        ),
-                        spacing="5",
-                        padding_y="4rem",
-                    ),
-                    max_width="1200px",
-                    margin="0 auto",
-                    padding_x="1.5rem",
-                    width="100%",
-                ),
-                
-                # 5. What's live right now section
-                rx.box(
-                    rx.vstack(
-                        rx.box(
-                            rx.vstack(
-                                rx.heading("What's live right now", as_="h2", margin_bottom="1.5rem"),
-                                rx.text(
-                            "PriceDuck is in early MVP.",
-                                    margin_bottom="1rem",
-                        ),
-                                rx.text(
-                            "We're starting with a small set of services and countries, and we'll keep expanding coverage over time.",
-                                    margin_bottom="2rem",
-                        ),
-                        
-                        # Services covered
-                        rx.vstack(
-                                    rx.heading("Services covered today", as_="h3", margin_bottom="0.5rem"),
-                            rx.unordered_list(
-                                rx.list_item(
-                                            rx.link(
-                                                rx.text("Adobe Creative Cloud All Apps"),
-                                        href=cheapest_slug if cheapest_slug else "#",
-                                    ),
-                                ),
-                                        padding_left="1.5rem",
-                                        margin_bottom="2rem",
-                            ),
-                            align="start",
-                                    margin_bottom="2rem",
-                        ),
-                        
-                        # Countries and regions
-                        rx.vstack(
-                                    rx.heading("Countries and regions", as_="h3", margin_bottom="0.5rem"),
-                            rx.hstack(
-                                *[
-                                    rx.fragment(
-                                                rx.link(
-                                                    rx.text(region["name"]),
-                                            href=f"/{region['slug']}",
-                                        ),
-                                                rx.text(" · ", color="#4B5563", margin_x="0.25rem") if i < len(UNIQUE_REGIONS) - 1 else rx.fragment(),
-                                    )
-                                    for i, region in enumerate(UNIQUE_REGIONS)
-                                ],
-                                wrap="wrap",
-                                justify="center",
-                                align="center",
-                                        spacing="0",
-                                        margin_bottom="2rem",
-                            ),
-                            align="start",
-                            width="100%",
-                        ),
-                        align="start",
-                        width="100%",
-                    ),
-                ),
-                        spacing="5",
-                        padding_y="4rem",
-                    ),
-                    max_width="1200px",
-                    margin="0 auto",
-                    padding_x="1.5rem",
-                    width="100%",
-                ),
-                
-                footer_component,
-                
-                spacing="0",
-                align="stretch",
-                min_height="100vh",
-            ),
-            padding_top="36px",
-        ),
-        min_height="100vh",
+        border_top=f"1px solid {COLOR_BORDER}",
     )
 
 def health() -> rx.Component:

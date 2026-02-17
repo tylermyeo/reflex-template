@@ -10,39 +10,11 @@ from .pages import cms_rows, make_cms_page, State
 
 from .api import root, sitemap
 
-# Custom style with Bricolage Grotesque font
-custom_style = {
-    "@import": "url('https://fonts.googleapis.com/css2?family=Bricolage+Grotesque:opsz,wdth,wght@12..96,75..100,200..800&display=swap')",
-    "body": {
-        "font_family": "'Bricolage Grotesque', sans-serif",
-        "font_weight": 700,
-        "font_style": "normal",
-        "font_optical_sizing": "auto",
-        "font_variation_settings": "'wdth' 100",
-        "margin": "0",
-        "padding": "0",
-        "color": "#374151",
-    },
-}
-
 # Google Analytics configuration
 def google_analytics():
     """Create Google Analytics tracking components"""
     return [
-        # Force left alignment at HTML/body level
-        rx.html("""
-            <style>
-                html, body, #root, [data-radix-scroll-area-viewport] {
-                    text-align: left !important;
-                }
-                h1, h2, h3, h4, h5, h6, p, div {
-                    text-align: left !important;
-                }
-            </style>
-        """),
-        # Google Analytics script
         rx.script(src="https://www.googletagmanager.com/gtag/js?id=G-QK7PNNWCBW", async_=True),
-        # Google Analytics initialization
         rx.script("""
             window.dataLayer = window.dataLayer || [];
             function gtag(){dataLayer.push(arguments);}
@@ -54,12 +26,12 @@ def google_analytics():
 app = rx.App(
     style={
         "font_family": "'Bricolage Grotesque', sans-serif",
-        "font_optical_sizing": "auto", 
+        "font_weight": 500,
+        "font_style": "normal",
+        "font_optical_sizing": "auto",
         "font_variation_settings": "'wdth' 100",
         "color": "#374151",
-        "*": {
-            "text_align": "left !important",
-        },
+        "text_align": "left",
     },
     stylesheets=[
         "https://fonts.googleapis.com/css2?family=Bricolage+Grotesque:opsz,wdth,wght@12..96,75..100,200..800&display=swap",
@@ -99,7 +71,7 @@ app.add_page(
         {"name": "twitter:image", "content": "https://www.priceduck.co.za/og-image.jpg"},
         
         # Additional SEO
-        {"name": "theme-color", "content": "#8B5CF6"},
+        {"name": "theme-color", "content": "#374151"},
         {"name": "language", "content": "English"},
         # Removed deprecated "revisit-after" meta tag - Google ignores it
     ]
